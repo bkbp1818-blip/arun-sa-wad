@@ -1,0 +1,262 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USERS & AUTH ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  password      String?   // For email/password login
+  name          String?
+  phone         String?
+  image         String?
+  emailVerified DateTime?
+  role          UserRole  @default(GUEST)
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[]
+  affiliate     Affiliate?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum UserRole {
+  GUEST
+  ADMIN
+  AGENT
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ==================== PRODUCTS ====================
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  nameTh      String
+  description String?     @db.Text
+  descTh      String?     @db.Text
+  type        ProductType
+  price       Decimal     @db.Decimal(10, 2)
+  currency    String      @default("THB")
+  images      String[]    // Array of image URLs
+  isActive    Boolean     @default(true)
+
+  // For ROOM type
+  roomNumber  String?
+  capacity    Int?
+  amenities   String[]
+
+  // For TOUR type
+  duration    String?     // e.g., "3 hours"
+  meetingPoint String?
+  schedule    Json?       // Available days/times
+
+  // Relations
+  bookingItems BookingItem[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum ProductType {
+  ROOM          // ห้องพัก
+  TOUR          // ทัวร์/กิจกรรม
+  FOOD          // อาหาร/Street Food
+  MERCH         // ของฝาก/Starter Kit
+  SERVICE       // บริการเสริม (Late checkout, Luggage, Transfer)
+}
+
+// ==================== BOOKINGS ====================
+
+model Booking {
+  id              String        @id @default(cuid())
+  bookingNumber   String        @unique @default(cuid())
+  userId          String
+  status          BookingStatus @default(PENDING)
+
+  // Dates (for room bookings)
+  checkIn         DateTime?
+  checkOut        DateTime?
+
+  // Pricing
+  subtotal        Decimal       @db.Decimal(10, 2)
+  discount        Decimal       @default(0) @db.Decimal(10, 2)
+  total           Decimal       @db.Decimal(10, 2)
+
+  // Payment
+  paymentStatus   PaymentStatus @default(UNPAID)
+  paymentMethod   String?
+  paymentRef      String?
+
+  // Affiliate tracking
+  affiliateId     String?
+  commissionPaid  Decimal       @default(0) @db.Decimal(10, 2)
+
+  // Relations
+  user            User          @relation(fields: [userId], references: [id])
+  items           BookingItem[]
+  affiliate       Affiliate?    @relation(fields: [affiliateId], references: [id])
+
+  // Guest info (if different from user)
+  guestName       String?
+  guestEmail      String?
+  guestPhone      String?
+  specialRequests String?       @db.Text
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+  PARTIAL
+}
+
+model BookingItem {
+  id          String   @id @default(cuid())
+  bookingId   String
+  productId   String
+  quantity    Int      @default(1)
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  totalPrice  Decimal  @db.Decimal(10, 2)
+
+  // Specific date/time for this item
+  serviceDate DateTime?
+  notes       String?
+
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+
+// ==================== AFFILIATE SYSTEM ====================
+
+model Affiliate {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  referralCode    String   @unique
+  commissionRate  Decimal  @default(10) @db.Decimal(5, 2) // percentage
+
+  // Balance
+  totalEarned     Decimal  @default(0) @db.Decimal(10, 2)
+  pendingBalance  Decimal  @default(0) @db.Decimal(10, 2)
+  paidBalance     Decimal  @default(0) @db.Decimal(10, 2)
+
+  // Bank info for withdrawal
+  bankName        String?
+  bankAccount     String?
+  bankAccountName String?
+
+  // Stats
+  totalClicks     Int      @default(0)
+  totalBookings   Int      @default(0)
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id])
+  bookings        Booking[]
+  withdrawals     Withdrawal[]
+
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Withdrawal {
+  id          String           @id @default(cuid())
+  affiliateId String
+  amount      Decimal          @db.Decimal(10, 2)
+  status      WithdrawalStatus @default(PENDING)
+
+  // Admin processing
+  processedBy String?
+  processedAt DateTime?
+  transferRef String?
+  notes       String?
+
+  affiliate   Affiliate        @relation(fields: [affiliateId], references: [id])
+
+  createdAt   DateTime         @default(now())
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  COMPLETED
+  REJECTED
+}
+
+// ==================== PARTNER COUPONS ====================
+
+model PartnerCoupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  partnerName String   // e.g., "ร้านซีฟู้ดเสื้อเขียว"
+  description String
+  discountType String  // "PERCENT" or "FIXED"
+  discountValue Decimal @db.Decimal(10, 2)
+
+  validFrom   DateTime
+  validUntil  DateTime
+  maxUses     Int?
+  usedCount   Int      @default(0)
+
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
