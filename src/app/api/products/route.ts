@@ -2,10 +2,23 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ProductType } from "@prisma/client";
 
+// Valid product types from Prisma enum
+const validProductTypes: ProductType[] = ["ROOM", "TOUR", "FOOD", "SERVICE", "MERCH"];
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type") as ProductType | null;
+    const typeParam = searchParams.get("type");
+
+    // Validate type parameter if provided
+    if (typeParam && !validProductTypes.includes(typeParam as ProductType)) {
+      return NextResponse.json(
+        { error: `Invalid product type. Valid types: ${validProductTypes.join(", ")}` },
+        { status: 400 }
+      );
+    }
+
+    const type = typeParam as ProductType | null;
 
     const products = await prisma.product.findMany({
       where: {
