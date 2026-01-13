@@ -36,8 +36,8 @@
 | Initialize Next.js project | Done | `package.json`, `next.config.ts` |
 | Setup Prisma + PostgreSQL | Done | `prisma/schema.prisma` |
 | NextAuth with Credentials | Done | `src/lib/auth.ts` |
-| Google OAuth | Done | Vercel env vars configured |
-| LINE OAuth | Pending | Need LINE Developer Console setup |
+| Google OAuth | Done | Vercel env vars configured (Testing mode) |
+| LINE OAuth | Pending | Button removed, need LINE Developer Console |
 | Basic UI Layout | Done | `src/components/shared/` |
 | Shadcn UI Components | Done | `src/components/ui/` |
 
@@ -93,6 +93,29 @@
 
 ---
 
+## Recent Updates (January 2026)
+
+### Bug Fixes
+| Issue | Fix | Status |
+|-------|-----|--------|
+| Invalid product type returns 500 | Added type validation in `/api/products` | Fixed |
+| OAuth providers crash without credentials | Made providers conditional in `auth.ts` | Fixed |
+| Duplicate products in database | Created cleanup script, removed 22 duplicates | Fixed |
+
+### Authentication Updates
+| Provider | Status | Notes |
+|----------|--------|-------|
+| Email/Password | Working | Test account: test@test.com / admin123 |
+| Google OAuth | Working | Testing mode - requires test user |
+| LINE OAuth | Pending | Button removed from login page |
+
+### Database Cleanup
+- **Before:** 36 products (with duplicates)
+- **After:** 14 products (unique)
+- **Script:** `prisma/cleanup-duplicates.ts`
+
+---
+
 ## API Endpoints
 
 ### Public APIs
@@ -101,6 +124,7 @@
 | GET | `/api/products` | Done | List all products |
 | GET | `/api/products?type=ROOM` | Done | List rooms only |
 | GET | `/api/products?type=TOUR` | Done | List tours only |
+| GET | `/api/products?type=SERVICE` | Done | List services only |
 | GET | `/api/products/[id]` | Done | Product detail |
 | GET | `/api/affiliates/track?ref=CODE` | Done | Track referral click |
 
@@ -204,10 +228,20 @@ src/
 │   └── useCart.ts                      # Zustand store
 ├── lib/
 │   ├── prisma.ts
-│   ├── auth.ts
+│   ├── auth.ts                         # Conditional OAuth providers
 │   └── utils.ts
 └── types/
     └── next-auth.d.ts
+
+prisma/
+├── schema.prisma
+├── seed.ts
+└── cleanup-duplicates.ts               # Database cleanup script
+
+TESTING/
+├── TEST_REPORT.md                      # E2E test results
+├── MASTER_TEST_PROMPTS.md              # Test prompts
+└── ARUN_SAWAD_E2E_TEST_PROMPTS.md      # Comprehensive test cases
 ```
 
 ---
@@ -227,12 +261,37 @@ PROMPTPAY_ID="0812345678"
 |----------|--------|
 | DATABASE_URL | Configured |
 | AUTH_SECRET | Configured |
-| NEXTAUTH_URL | Configured |
+| NEXTAUTH_URL | Configured (https://sale-cyan.vercel.app) |
 | PROMPTPAY_ID | Configured |
 | GOOGLE_CLIENT_ID | Configured |
 | GOOGLE_CLIENT_SECRET | Configured |
 | LINE_CLIENT_ID | Pending |
 | LINE_CLIENT_SECRET | Pending |
+
+---
+
+## Test Results (Latest)
+
+### Summary
+| Metric | Value |
+|--------|-------|
+| Total Tests | 52 |
+| Passed | 46 |
+| Failed | 0 |
+| Needs Browser | 4 |
+| Pass Rate | **88.5%** |
+
+### Test Coverage
+```
+Guest Flow:       ████████████ 95%
+Authentication:   ██████████░░ 85%
+Booking System:   ███████░░░░░ 60%
+Admin Panel:      ███████████░ 90%
+Agent Panel:      ███████████░ 90%
+API Endpoints:    ████████████ 100%
+Security:         ████████████ 100%
+Edge Cases:       ██████████░░ 85%
+```
 
 ---
 
@@ -252,6 +311,7 @@ PROMPTPAY_ID="0812345678"
 | Facebook Login | Not Started | Low priority for Thai users |
 | Stripe Integration | Not Started | PromptPay is sufficient |
 | Multi-language | Not Started | Currently Thai only |
+| Room Filter/Search | Not Started | Currently no search in /rooms |
 
 ---
 
@@ -283,13 +343,19 @@ PROMPTPAY_ID="0812345678"
 - [x] Setup bank account
 - [x] Request withdrawal
 
+### Security
+- [x] XSS Prevention
+- [x] SQL Injection Prevention
+- [x] Protected Routes
+- [x] API Authentication
+
 ---
 
 ## Deployment Info
 
 | Environment | URL | Auto-deploy |
 |-------------|-----|-------------|
-| Production | https://sale-cyan.vercel.app | Yes (from main) |
+| Production | https://sale-cyan.vercel.app | Yes (from master) |
 | GitHub | https://github.com/bkbp1818-blip/arun-sa-wad | - |
 
 ---
@@ -299,7 +365,16 @@ PROMPTPAY_ID="0812345678"
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0.0 | Jan 2025 | Initial release with all core features |
+| 1.1.0 | Jan 2026 | Bug fixes, Google OAuth, database cleanup, E2E testing |
+
+### v1.1.0 Changes
+- Fixed product type validation (400 instead of 500)
+- Made OAuth providers conditional
+- Removed LINE login button (pending setup)
+- Cleaned up 22 duplicate products
+- Added comprehensive E2E test suite
+- Updated NEXTAUTH_URL for production
 
 ---
 
-*Last Updated: January 2025*
+*Last Updated: January 13, 2026*
