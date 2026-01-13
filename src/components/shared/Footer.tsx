@@ -87,6 +87,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} ARUN SA WAD. All rights reserved.</p>
+          <p className="mt-2 text-xs">Version 1.0.0 - Deployed via GitHub</p>
         </div>
       </div>
     </footer>
