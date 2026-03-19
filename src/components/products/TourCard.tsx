@@ -36,7 +36,8 @@ export function TourCard({ tour }: TourCardProps) {
 
       {/* Content */}
       <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-1">{tour.nameTh}</h3>
+        <h3 className="font-semibold text-lg mb-0.5">{tour.name}</h3>
+        <p className="text-sm text-muted-foreground mb-2">{tour.nameTh}</p>
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
           {tour.descTh || tour.description}
         </p>
