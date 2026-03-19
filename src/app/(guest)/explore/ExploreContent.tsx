@@ -20,7 +20,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   EXPLORE_PLACES as STATIC_PLACES,
   HOTEL_LOCATION,
+  HOTEL_BRANCHES,
 } from "@/lib/constants/explore-places";
+import type { HotelBranch } from "@/lib/constants/explore-places";
 
 const ExploreMap = dynamic(
   () =>
@@ -86,8 +88,22 @@ const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
   { value: "event", label: "เทศกาล" },
 ];
 
-function PlaceCard({ place }: { place: DisplayPlace }) {
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${HOTEL_LOCATION.lat},${HOTEL_LOCATION.lng}&destination=${place.lat},${place.lng}&travelmode=walking`;
+type OriginType = { lat: number; lng: number } | "current" | "custom";
+
+function buildGoogleMapsUrl(
+  origin: OriginType,
+  destination: { lat: number; lng: number }
+): string {
+  const dest = `${destination.lat},${destination.lng}`;
+  if (origin === "current" || origin === "custom") {
+    // ไม่ใส่ origin → Google Maps ใช้ตำแหน่งปัจจุบันหรือให้ผู้ใช้กรอกเอง
+    return `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=walking`;
+  }
+  return `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest}&travelmode=walking`;
+}
+
+function PlaceCard({ place, origin }: { place: DisplayPlace; origin: OriginType }) {
+  const googleMapsUrl = buildGoogleMapsUrl(origin, { lat: place.lat, lng: place.lng });
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hasMultipleImages = place.images.length > 1;
@@ -243,10 +259,12 @@ function CarouselRow({
   title,
   color,
   places,
+  origin,
 }: {
   title: string;
   color: string;
   places: DisplayPlace[];
+  origin: OriginType;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -332,7 +350,7 @@ function CarouselRow({
               key={place.id}
               className="snap-start shrink-0 w-[280px] sm:w-[300px]"
             >
-              <PlaceCard place={place} />
+              <PlaceCard place={place} origin={origin} />
             </div>
           ))}
         </div>
@@ -341,10 +359,48 @@ function CarouselRow({
   );
 }
 
+// Origin selector option type
+type OriginOptionId = "current" | "custom" | string; // string = branch id
+
 export function ExploreContent() {
   const [filter, setFilter] = useState<FilterType>("all");
   const [places, setPlaces] = useState<DisplayPlace[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOriginId, setSelectedOriginId] = useState<OriginOptionId>("chinatown");
+  const [gpsPosition, setGpsPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [gpsError, setGpsError] = useState<string | null>(null);
+  const originScrollRef = useRef<HTMLDivElement>(null);
+
+  // Compute the actual origin value from selectedOriginId
+  const origin: OriginType = (() => {
+    if (selectedOriginId === "current") {
+      return gpsPosition ? { lat: gpsPosition.lat, lng: gpsPosition.lng } : "current";
+    }
+    if (selectedOriginId === "custom") return "custom";
+    const branch = HOTEL_BRANCHES.find((b) => b.id === selectedOriginId);
+    if (branch) return { lat: branch.lat, lng: branch.lng };
+    return { lat: HOTEL_BRANCHES[0].lat, lng: HOTEL_BRANCHES[0].lng };
+  })();
+
+  // Handle GPS request when "ตำแหน่งของฉัน" is selected
+  useEffect(() => {
+    if (selectedOriginId !== "current") return;
+    if (gpsPosition) return; // already got position
+    if (!navigator.geolocation) {
+      setGpsError("เบราว์เซอร์ไม่รองรับ GPS");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGpsPosition({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGpsError(null);
+      },
+      (err) => {
+        setGpsError("ไม่สามารถดึงตำแหน่งได้ — จะใช้ตำแหน่งปัจจุบันจาก Google Maps แทน");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [selectedOriginId, gpsPosition]);
 
   useEffect(() => {
     async function fetchPlaces() {
@@ -417,7 +473,7 @@ export function ExploreContent() {
   return (
     <div className="space-y-6">
       {/* Map */}
-      <ExploreMap places={filteredPlaces} />
+      <ExploreMap places={filteredPlaces} origin={origin} selectedOriginId={selectedOriginId} />
 
       {/* Filter Tabs */}
       <Tabs
@@ -444,6 +500,60 @@ export function ExploreContent() {
         </TabsList>
       </Tabs>
 
+      {/* Origin Selector */}
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-muted-foreground">เริ่มจาก:</p>
+        <div
+          ref={originScrollRef}
+          className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {/* ตำแหน่งของฉัน */}
+          <button
+            onClick={() => setSelectedOriginId("current")}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              selectedOriginId === "current"
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-background text-foreground border-border hover:bg-muted"
+            }`}
+          >
+            📍 ตำแหน่งของฉัน
+          </button>
+          {/* Hotel branches */}
+          {HOTEL_BRANCHES.map((branch) => (
+            <button
+              key={branch.id}
+              onClick={() => setSelectedOriginId(branch.id)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                selectedOriginId === branch.id
+                  ? "bg-red-600 text-white border-red-600"
+                  : "bg-background text-foreground border-border hover:bg-muted"
+              }`}
+            >
+              🏨 {branch.shortName}
+            </button>
+          ))}
+          {/* เลือกเอง */}
+          <button
+            onClick={() => setSelectedOriginId("custom")}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              selectedOriginId === "custom"
+                ? "bg-green-600 text-white border-green-600"
+                : "bg-background text-foreground border-border hover:bg-muted"
+            }`}
+          >
+            🗺️ เลือกเอง
+          </button>
+        </div>
+        {/* GPS status message */}
+        {selectedOriginId === "current" && gpsError && (
+          <p className="text-xs text-amber-600">{gpsError}</p>
+        )}
+        {selectedOriginId === "current" && gpsPosition && (
+          <p className="text-xs text-green-600">ได้ตำแหน่ง GPS แล้ว</p>
+        )}
+      </div>
+
       {/* Cards Carousel by Category */}
       {filteredPlaces.length > 0 ? (
         filter === "all" ? (
@@ -457,6 +567,7 @@ export function ExploreContent() {
                 title={opt.label}
                 color={TYPE_COLORS[opt.value] || "#888"}
                 places={typePlaces}
+                origin={origin}
               />
             );
           })
@@ -466,6 +577,7 @@ export function ExploreContent() {
             title={TYPE_LABELS[filter] || filter}
             color={TYPE_COLORS[filter] || "#888"}
             places={filteredPlaces}
+            origin={origin}
           />
         )
       ) : (

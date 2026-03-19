@@ -1,4 +1,5 @@
-import { HOTEL_LOCATION } from "./nearby-places";
+import { HOTEL_LOCATION, HOTEL_BRANCHES } from "./nearby-places";
+import type { HotelBranch } from "./nearby-places";
 
 export type ExplorePlaceType =
   | "temple"
@@ -460,4 +461,5 @@ export const EXPLORE_TYPE_LABELS: Record<ExplorePlaceType, string> = {
   event: "เทศกาล",
 };
 
-export { HOTEL_LOCATION };
+export { HOTEL_LOCATION, HOTEL_BRANCHES };
+export type { HotelBranch };
