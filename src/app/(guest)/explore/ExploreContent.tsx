@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 import {
   MapPin,
@@ -152,12 +151,10 @@ function PlaceCard({ place, origin }: { place: DisplayPlace; origin: OriginType 
         onMouseLeave={stopCycling}
       >
         {place.images[0] ? (
-          <Image
+          <img
             src={place.images[currentIndex] || place.images[0]}
             alt={place.nameTh}
-            fill
-            sizes="(max-width: 640px) 280px, 300px"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">
