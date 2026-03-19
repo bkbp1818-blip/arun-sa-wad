@@ -50,10 +50,10 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">บริการเสริม</h1>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">บริการเสริม</h1>
         <p className="text-muted-foreground">
           เพิ่มความสะดวกให้ทริปเยาวราชของคุณด้วยบริการพิเศษ
         </p>
@@ -61,11 +61,11 @@ export default function ServicesPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="all">ทั้งหมด ({services.length})</TabsTrigger>
-          <TabsTrigger value="food">อาหาร ({foodItems.length})</TabsTrigger>
-          <TabsTrigger value="service">บริการ ({serviceItems.length})</TabsTrigger>
-          <TabsTrigger value="merch">ของฝาก ({merchItems.length})</TabsTrigger>
+        <TabsList className="mb-6 w-full flex overflow-x-auto">
+          <TabsTrigger value="all" className="flex-1 min-w-0">ทั้งหมด ({services.length})</TabsTrigger>
+          <TabsTrigger value="food" className="flex-1 min-w-0">อาหาร ({foodItems.length})</TabsTrigger>
+          <TabsTrigger value="service" className="flex-1 min-w-0">บริการ ({serviceItems.length})</TabsTrigger>
+          <TabsTrigger value="merch" className="flex-1 min-w-0">ของฝาก ({merchItems.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all">

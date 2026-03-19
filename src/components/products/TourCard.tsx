@@ -106,14 +106,14 @@ export function TourCard({ tour }: TourCardProps) {
       </CardContent>
 
       {/* Footer */}
-      <CardFooter className="p-4 pt-0 flex items-center justify-between">
+      <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <span className="text-2xl font-bold text-primary">
+          <span className="text-xl sm:text-2xl font-bold text-primary">
             {price.toLocaleString()}
           </span>
           <span className="text-sm text-muted-foreground"> ฿/คน</span>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto h-11">
           <Link href={`/tours/${tour.id}`}>ดูรายละเอียด</Link>
         </Button>
       </CardFooter>

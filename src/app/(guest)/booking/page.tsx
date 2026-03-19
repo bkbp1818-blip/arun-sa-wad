@@ -149,7 +149,7 @@ function BookingContent() {
         กลับหน้าหลัก
       </Link>
 
-      <h1 className="text-3xl font-bold mb-8">ยืนยันการจอง</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">ยืนยันการจอง</h1>
 
       {items.length === 0 ? (
         <Card>
@@ -177,56 +177,57 @@ function BookingContent() {
                   {items.map((item) => (
                     <div
                       key={item.productId}
-                      className="flex items-center justify-between py-3 border-b last:border-0"
+                      className="py-3 border-b last:border-0"
                     >
-                      <div className="flex-1">
-                        <h4 className="font-medium">{item.nameTh}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {item.price.toLocaleString()} ฿
-                          {item.type === "ROOM" ? "/คืน" : item.type === "TOUR" ? "/คน" : ""}
-                        </p>
-                      </div>
-
-                      {/* Quantity */}
-                      <div className="flex items-center gap-2">
+                      {/* Row 1: Name + Remove */}
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium">{item.nameTh}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {item.price.toLocaleString()} ฿
+                            {item.type === "ROOM" ? "/คืน" : item.type === "TOUR" ? "/คน" : ""}
+                          </p>
+                        </div>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            updateQuantity(item.productId, Math.max(1, item.quantity - 1))
-                          }
+                          className="text-destructive shrink-0 -mt-1 -mr-2"
+                          onClick={() => removeItem(item.productId)}
                         >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                        >
-                          <Plus className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
 
-                      {/* Total */}
-                      <div className="w-24 text-right font-medium">
-                        {(item.price * item.quantity).toLocaleString()} ฿
+                      {/* Row 2: Quantity + Total */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={() =>
+                              updateQuantity(item.productId, Math.max(1, item.quantity - 1))
+                            }
+                          >
+                            <Minus className="h-4 w-4" />
+                          </Button>
+                          <span className="w-8 text-center font-medium">{item.quantity}</span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="font-semibold text-primary">
+                          {(item.price * item.quantity).toLocaleString()} ฿
+                        </div>
                       </div>
-
-                      {/* Remove */}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="ml-2 text-destructive"
-                        onClick={() => removeItem(item.productId)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
                     </div>
                   ))}
                 </CardContent>

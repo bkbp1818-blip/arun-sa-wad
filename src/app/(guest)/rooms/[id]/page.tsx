@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Users, Wifi, Wind, Tv, Bath } from "lucide-react";
+import { ImageGallery } from "@/components/products/ImageGallery";
 
 interface RoomDetailPageProps {
   params: Promise<{ id: string }>;
@@ -45,44 +46,30 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
   const price = Number(room.price);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
       {/* Back Button */}
       <Link
         href="/rooms"
-        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
+        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 sm:mb-6"
       >
         <ArrowLeft className="h-4 w-4 mr-1" />
         กลับไปหน้าห้องพัก
       </Link>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Image */}
-        <div className="relative aspect-[4/3] bg-muted rounded-lg overflow-hidden">
-          {room.images[0] ? (
-            <img
-              src={room.images[0]}
-              alt={room.nameTh}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              No Image
-            </div>
-          )}
-        </div>
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
+        {/* Image Gallery */}
+        <ImageGallery images={room.images} alt={room.nameTh} />
 
         {/* Details */}
         <div>
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              {room.roomNumber && (
-                <Badge variant="secondary" className="mb-2">
-                  ห้อง {room.roomNumber}
-                </Badge>
-              )}
-              <h1 className="text-3xl font-bold">{room.nameTh}</h1>
-              <p className="text-muted-foreground">{room.name}</p>
-            </div>
+          <div className="mb-4">
+            {room.roomNumber && (
+              <Badge variant="secondary" className="mb-2">
+                ห้อง {room.roomNumber}
+              </Badge>
+            )}
+            <h1 className="text-2xl sm:text-3xl font-bold">{room.nameTh}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">{room.name}</p>
           </div>
 
           {/* Capacity */}
@@ -120,17 +107,17 @@ export default async function RoomDetailPage({ params }: RoomDetailPageProps) {
 
           {/* Price & Booking Card */}
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <span className="text-3xl font-bold text-primary">
+                  <span className="text-2xl sm:text-3xl font-bold text-primary">
                     {price.toLocaleString()}
                   </span>
                   <span className="text-muted-foreground"> ฿/คืน</span>
                 </div>
               </div>
 
-              <Button size="lg" className="w-full" asChild>
+              <Button size="lg" className="w-full h-12 text-base" asChild>
                 <Link href={`/booking?room=${room.id}`}>
                   จองห้องนี้
                 </Link>

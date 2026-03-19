@@ -41,17 +41,17 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
   const schedule = tour.schedule as { days?: string[]; times?: string[] } | null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
       {/* Back Button */}
       <Link
         href="/tours"
-        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
+        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4 sm:mb-6"
       >
         <ArrowLeft className="h-4 w-4 mr-1" />
         กลับไปหน้าทัวร์
       </Link>
 
-      <div className="grid gap-8 lg:grid-cols-2">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
         {/* Image Gallery */}
         <ImageGallery images={tour.images} alt={tour.nameTh} />
 
@@ -63,8 +63,8 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
                 {tour.duration}
               </Badge>
             )}
-            <h1 className="text-3xl font-bold">{tour.nameTh}</h1>
-            <p className="text-muted-foreground">{tour.name}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">{tour.nameTh}</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">{tour.name}</p>
           </div>
 
           {/* Info */}
@@ -127,17 +127,17 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
 
           {/* Price & Booking Card */}
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <span className="text-3xl font-bold text-primary">
+                  <span className="text-2xl sm:text-3xl font-bold text-primary">
                     {price.toLocaleString()}
                   </span>
                   <span className="text-muted-foreground"> ฿/คน</span>
                 </div>
               </div>
 
-              <Button size="lg" className="w-full" asChild>
+              <Button size="lg" className="w-full h-12 text-base" asChild>
                 <Link href={`/booking?tour=${tour.id}`}>
                   จองทัวร์นี้
                 </Link>

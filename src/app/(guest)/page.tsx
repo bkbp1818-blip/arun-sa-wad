@@ -36,24 +36,24 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-b from-primary/10 to-background py-20 md:py-32">
+      <section className="relative bg-gradient-to-b from-primary/10 to-background py-12 sm:py-20 md:py-32">
         <div className="container mx-auto px-4 text-center">
           <Badge variant="secondary" className="mb-4">
             Welcome to Yaowarat
           </Badge>
-          <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-6xl">
             <span className="text-primary">ARUN SA WAD</span>
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground md:text-xl">
+          <p className="mx-auto mt-3 sm:mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg md:text-xl">
             อรุณสวัสดิ์ - โรงแรมบูติคใจกลางเยาวราช
             <br />
             สัมผัสประสบการณ์ Chinatown แท้ๆ ในแบบที่คุณไม่เคยรู้จัก
           </p>
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <Button size="lg" asChild>
+          <div className="mt-6 sm:mt-8 flex flex-col justify-center gap-3 sm:gap-4 sm:flex-row">
+            <Button size="lg" className="h-12 text-base" asChild>
               <Link href="/rooms">จองห้องพัก</Link>
             </Button>
-            <Button size="lg" variant="outline" asChild>
+            <Button size="lg" variant="outline" className="h-12 text-base" asChild>
               <Link href="/tours">ดูทัวร์ทั้งหมด</Link>
             </Button>
           </div>
@@ -61,10 +61,10 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-10 sm:py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold">บริการของเรา</h2>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold">บริการของเรา</h2>
             <p className="mt-2 text-muted-foreground">
               ครบครันทุกความต้องการสำหรับทริปเยาวราชของคุณ
             </p>
@@ -89,27 +89,27 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-primary py-16 text-primary-foreground">
+      <section className="bg-primary py-10 sm:py-16 text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold">พร้อมเริ่มต้นทริปเยาวราช?</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">พร้อมเริ่มต้นทริปเยาวราช?</h2>
           <p className="mt-4 text-primary-foreground/80">
             จองตอนนี้รับส่วนลดพิเศษสำหรับบริการเสริม
           </p>
-          <Button size="lg" variant="secondary" className="mt-8" asChild>
+          <Button size="lg" variant="secondary" className="mt-6 sm:mt-8 h-12 text-base" asChild>
             <Link href="/rooms">เริ่มจองเลย</Link>
           </Button>
         </div>
       </section>
 
       {/* Map Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-10 sm:py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <Badge variant="secondary" className="mb-3">
               <MapPin className="h-3 w-3 mr-1" />
               Location
             </Badge>
-            <h2 className="text-3xl font-bold">ตำแหน่งของเรา</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold">ตำแหน่งของเรา</h2>
             <p className="mt-2 text-muted-foreground">
               ใจกลางเยาวราช ใกล้ MRT วัดมังกร เดินแค่ 5 นาที
             </p>
@@ -126,19 +126,19 @@ export default function HomePage() {
       </section>
 
       {/* Info Section */}
-      <section className="py-16">
+      <section className="py-10 sm:py-16">
         <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-3 gap-4 sm:gap-8">
             <div className="text-center">
-              <h3 className="text-4xl font-bold text-primary">100+</h3>
+              <h3 className="text-2xl sm:text-4xl font-bold text-primary">100+</h3>
               <p className="text-muted-foreground">รีวิว 5 ดาว</p>
             </div>
             <div className="text-center">
-              <h3 className="text-4xl font-bold text-primary">24/7</h3>
+              <h3 className="text-2xl sm:text-4xl font-bold text-primary">24/7</h3>
               <p className="text-muted-foreground">บริการลูกค้า</p>
             </div>
             <div className="text-center">
-              <h3 className="text-4xl font-bold text-primary">5 นาที</h3>
+              <h3 className="text-2xl sm:text-4xl font-bold text-primary">5 นาที</h3>
               <p className="text-muted-foreground">จาก MRT วัดมังกร</p>
             </div>
           </div>

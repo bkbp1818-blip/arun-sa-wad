@@ -20,10 +20,10 @@ export default async function ToursPage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">ทัวร์เยาวราช</h1>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">ทัวร์เยาวราช</h1>
         <p className="text-muted-foreground">
           สำรวจเสน่ห์ Chinatown กับไกด์ท้องถิ่นที่รู้จักทุกซอกมุม
         </p>
