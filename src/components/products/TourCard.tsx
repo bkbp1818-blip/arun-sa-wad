@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,14 +14,36 @@ interface TourCardProps {
 
 export function TourCard({ tour }: TourCardProps) {
   const price = Number(tour.price);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasMultipleImages = tour.images.length > 1;
+
+  const startCycling = useCallback(() => {
+    if (!hasMultipleImages) return;
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % tour.images.length);
+    }, 1500);
+  }, [hasMultipleImages, tour.images.length]);
+
+  const stopCycling = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setCurrentIndex(0);
+  }, []);
 
   return (
     <Card className="overflow-hidden group hover:shadow-lg transition-shadow">
       {/* Image */}
-      <div className="relative aspect-[4/3] bg-muted">
+      <div
+        className="relative aspect-[4/3] bg-muted"
+        onMouseEnter={startCycling}
+        onMouseLeave={stopCycling}
+      >
         {tour.images[0] ? (
           <img
-            src={tour.images[0]}
+            src={tour.images[currentIndex] || tour.images[0]}
             alt={tour.nameTh}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
@@ -32,11 +57,26 @@ export function TourCard({ tour }: TourCardProps) {
             {tour.duration}
           </Badge>
         )}
-        {tour.images.length > 1 && (
-          <Badge className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/60 text-white border-0 flex items-center gap-1">
-            <ImageIcon className="h-3 w-3" />
-            {tour.images.length} รูป
-          </Badge>
+        {hasMultipleImages && (
+          <>
+            <Badge className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/60 text-white border-0 flex items-center gap-1">
+              <ImageIcon className="h-3 w-3" />
+              {tour.images.length} รูป
+            </Badge>
+            {/* Dot indicators */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {tour.images.map((_, index) => (
+                <span
+                  key={index}
+                  className={`block h-1.5 w-1.5 rounded-full transition-colors ${
+                    index === currentIndex
+                      ? "bg-white"
+                      : "bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
 
