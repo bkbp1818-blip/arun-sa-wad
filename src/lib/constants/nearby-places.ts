@@ -22,7 +22,7 @@ export const HOTEL_BRANCHES: HotelBranch[] = [
   { id: "yaowarat", name: "ARUN SA WAD - YAOWARAT", nameTh: "เยาวราช", shortName: "YAOWARAT", lat: 13.7435887, lng: 100.504873 },
   { id: "nana", name: "ARUN SA WAD - 103 NANA", nameTh: "103 นานา", shortName: "103 NANA", lat: 13.7392403, lng: 100.5139454 },
   { id: "ladphrao", name: "ARUN SA WAD - House Lad Phrao", nameTh: "บ้านลาดพร้าว", shortName: "House ลาดพร้าว", lat: 13.8092807, lng: 100.5732116 },
-  { id: "onnut", name: "ARUN SA WAD - House ON NUT", nameTh: "บ้านอ่อนนุช", shortName: "House อ่อนนุช", lat: 13.7105, lng: 100.5985 },
+  { id: "onnut", name: "ARUN SA WAD - House ON NUT", nameTh: "บ้านอ่อนนุช", shortName: "House อ่อนนุช", lat: 13.7056708, lng: 100.6059399 },
 ];
 
 export interface NearbyPlace {
