@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { TourCard } from "@/components/products/TourCard";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "ทัวร์เยาวราช | ARUN SA WAD",
   description: "สำรวจเสน่ห์ Chinatown กับไกด์ท้องถิ่น",

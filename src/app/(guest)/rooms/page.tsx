@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { RoomCard } from "@/components/products/RoomCard";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "ห้องพัก | ARUN SA WAD",
   description: "ห้องพักสไตล์โมเดิร์น กลางย่านเยาวราช",
