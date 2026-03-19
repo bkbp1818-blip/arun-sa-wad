@@ -155,14 +155,12 @@ export function ExploreMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        {/* FlyTo when origin changes (GPS, branch, or custom) */}
+        <FlyToOnChange position={mapCenter} />
+
         {/* Click handler for custom origin */}
         {isCustomOrigin && onCustomOriginSelect && (
           <MapClickHandler onSelect={onCustomOriginSelect} />
-        )}
-
-        {/* FlyTo when custom origin changes */}
-        {isCustomOrigin && customOrigin && (
-          <FlyToOnChange position={[customOrigin.lat, customOrigin.lng]} />
         )}
 
         {/* Radius circle ~2.5km for hotel/GPS origin */}
