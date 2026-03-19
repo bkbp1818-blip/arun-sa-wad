@@ -90,6 +90,22 @@ const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
 
 type OriginType = { lat: number; lng: number } | "current" | "custom";
 
+function calculateDistance(
+  lat1: number, lng1: number,
+  lat2: number, lng2: number
+): string {
+  const R = 6371000; // Earth radius in meters
+  const toRad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const meters = R * c;
+  if (meters < 1000) return `${Math.round(meters)} ม.`;
+  return `${(meters / 1000).toFixed(1)} กม.`;
+}
+
 function buildGoogleMapsUrl(
   origin: OriginType,
   destination: { lat: number; lng: number }
@@ -220,7 +236,11 @@ function PlaceCard({ place, origin }: { place: DisplayPlace; origin: OriginType 
           )}
           <div className="flex items-center gap-1.5">
             <MapPin className="h-3 w-3 shrink-0" />
-            <span>ห่างจากโรงแรม {place.distance}</span>
+            <span>ห่างจากจุดเริ่มต้น {(() => {
+              if (origin === "custom") return "-";
+              if (origin === "current") return place.distance;
+              return calculateDistance(origin.lat, origin.lng, place.lat, place.lng);
+            })()}</span>
           </div>
         </div>
 
