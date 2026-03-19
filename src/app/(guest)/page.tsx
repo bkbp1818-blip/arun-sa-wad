@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Bed, Map, Utensils, Gift } from "lucide-react";
+import { Bed, Map, Utensils, Gift, MapPin } from "lucide-react";
+import { HomeMapSection } from "./HomeMapSection";
 
 const features = [
   {
@@ -97,6 +98,30 @@ export default function HomePage() {
           <Button size="lg" variant="secondary" className="mt-8" asChild>
             <Link href="/rooms">เริ่มจองเลย</Link>
           </Button>
+        </div>
+      </section>
+
+      {/* Map Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <Badge variant="secondary" className="mb-3">
+              <MapPin className="h-3 w-3 mr-1" />
+              Location
+            </Badge>
+            <h2 className="text-3xl font-bold">ตำแหน่งของเรา</h2>
+            <p className="mt-2 text-muted-foreground">
+              ใจกลางเยาวราช ใกล้ MRT วัดมังกร เดินแค่ 5 นาที
+            </p>
+          </div>
+          <HomeMapSection />
+          <div className="text-center mt-6">
+            <Button variant="outline" asChild>
+              <Link href="/location">
+                ดูแผนที่เต็มและวิธีเดินทาง &rarr;
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Clock, MapPin, Calendar } from "lucide-react";
+import { TourMeetingPointSection } from "./TourMeetingPointSection";
 
 interface TourDetailPageProps {
   params: Promise<{ id: string }>;
@@ -112,6 +113,21 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
                   <span>{schedule.times.join(", ")}</span>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Meeting Point Map */}
+          {tour.meetingPoint && tour.latitude && tour.longitude && (
+            <div className="mb-6">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                แผนที่จุดนัดพบ
+              </h3>
+              <TourMeetingPointSection
+                meetingPointName={tour.meetingPoint}
+                lat={tour.latitude}
+                lng={tour.longitude}
+              />
             </div>
           )}
 

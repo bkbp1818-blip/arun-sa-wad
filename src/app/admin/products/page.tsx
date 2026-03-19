@@ -20,8 +20,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Loader2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Search, FolderOpen } from "lucide-react";
 import type { Product } from "@prisma/client";
+
+interface Category {
+  id: string;
+  name: string;
+  nameTh: string;
+  slug: string;
+  isActive: boolean;
+}
+
+interface ProductWithCategory extends Product {
+  category: Category | null;
+}
 
 const typeLabels: Record<string, string> = {
   ROOM: "ห้องพัก",
@@ -40,14 +52,15 @@ const typeColors: Record<string, string> = {
 };
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductWithCategory[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   async function fetchProducts() {
@@ -61,6 +74,18 @@ export default function AdminProductsPage() {
       console.error("Failed to fetch products:", error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchCategories() {
+    try {
+      const res = await fetch("/api/admin/categories");
+      if (res.ok) {
+        const data = await res.json();
+        setCategories(data.filter((c: Category) => c.isActive));
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
     }
   }
 
@@ -83,8 +108,7 @@ export default function AdminProductsPage() {
     const matchesSearch =
       product.name.toLowerCase().includes(search.toLowerCase()) ||
       product.nameTh.toLowerCase().includes(search.toLowerCase());
-    const matchesType = typeFilter === "all" || product.type === typeFilter;
-    return matchesSearch && matchesType;
+    return matchesSearch;
   });
 
   if (loading) {
@@ -114,6 +138,7 @@ export default function AdminProductsPage() {
               <DialogTitle>เพิ่มสินค้าใหม่</DialogTitle>
             </DialogHeader>
             <ProductForm
+              categories={categories}
               onSuccess={() => {
                 setIsCreateOpen(false);
                 fetchProducts();
@@ -123,127 +148,141 @@ export default function AdminProductsPage() {
         </Dialog>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="ค้นหาสินค้า..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="ประเภท" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">ทั้งหมด</SelectItem>
-            <SelectItem value="ROOM">ห้องพัก</SelectItem>
-            <SelectItem value="TOUR">ทัวร์</SelectItem>
-            <SelectItem value="FOOD">อาหาร</SelectItem>
-            <SelectItem value="SERVICE">บริการ</SelectItem>
-            <SelectItem value="MERCH">ของฝาก</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="ค้นหาสินค้า..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
-      {/* Products Table */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="text-left p-4 font-medium">สินค้า</th>
-                  <th className="text-left p-4 font-medium">ประเภท</th>
-                  <th className="text-left p-4 font-medium">ราคา</th>
-                  <th className="text-left p-4 font-medium">สถานะ</th>
-                  <th className="text-right p-4 font-medium">จัดการ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                      ไม่พบสินค้า
-                    </td>
-                  </tr>
-                ) : (
-                  filteredProducts.map((product) => (
-                    <tr key={product.id} className="border-t">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
-                            {product.images[0] ? (
-                              <img
-                                src={product.images[0]}
-                                alt={product.nameTh}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <span className="text-xs text-muted-foreground">
-                                No img
-                              </span>
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium">{product.nameTh}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {product.name}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
-                            typeColors[product.type]
-                          }`}
-                        >
-                          {typeLabels[product.type]}
-                        </span>
-                      </td>
-                      <td className="p-4 font-medium">
-                        {Number(product.price).toLocaleString()} ฿
-                      </td>
-                      <td className="p-4">
-                        <Badge variant={product.isActive ? "default" : "secondary"}>
-                          {product.isActive ? "เปิดใช้งาน" : "ปิดใช้งาน"}
-                        </Badge>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Link href={`/admin/products/${product.id}`}>
-                            <Button variant="ghost" size="icon">
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-destructive"
-                            onClick={() => handleDelete(product.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
+      {/* Products by Type */}
+      {Object.keys(typeLabels).map((type) => {
+        const typeProducts = filteredProducts.filter((p) => p.type === type);
+        if (typeProducts.length === 0) return null;
+
+        return (
+          <Card key={type}>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2">
+                <span className={`inline-flex px-2 py-1 rounded text-sm font-medium ${typeColors[type]}`}>
+                  {typeLabels[type]}
+                </span>
+                <span className="text-muted-foreground text-sm font-normal">
+                  ({typeProducts.length} รายการ)
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="text-left p-4 font-medium">สินค้า</th>
+                      <th className="text-left p-4 font-medium">ราคา</th>
+                      <th className="text-left p-4 font-medium">ช่วงใช้งาน</th>
+                      <th className="text-left p-4 font-medium">สถานะ</th>
+                      <th className="text-right p-4 font-medium">จัดการ</th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                  </thead>
+                  <tbody>
+                    {typeProducts.map((product) => (
+                      <tr key={product.id} className="border-t">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
+                              {product.images[0] ? (
+                                <img
+                                  src={product.images[0]}
+                                  alt={product.nameTh}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <span className="text-xs text-muted-foreground">
+                                  No img
+                                </span>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium">{product.nameTh}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {product.name}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4 font-medium">
+                          {Number(product.price).toLocaleString()} ฿
+                        </td>
+                        <td className="p-4 text-sm text-muted-foreground">
+                          {product.availableFrom || product.availableTo ? (
+                            <div>
+                              {product.availableFrom && (
+                                <span>{new Date(product.availableFrom).toLocaleDateString("th-TH")}</span>
+                              )}
+                              {product.availableFrom && product.availableTo && " - "}
+                              {product.availableTo && (
+                                <span>{new Date(product.availableTo).toLocaleDateString("th-TH")}</span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">ไม่กำหนด</span>
+                          )}
+                        </td>
+                        <td className="p-4">
+                          <Badge variant={product.isActive ? "default" : "secondary"}>
+                            {product.isActive ? "เปิดใช้งาน" : "ปิดใช้งาน"}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link href={`/admin/products/${product.id}`}>
+                              <Button variant="ghost" size="icon">
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive"
+                              onClick={() => handleDelete(product.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+
+      {filteredProducts.length === 0 && (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            ไม่พบสินค้า
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
 
 // Product Form Component
-function ProductForm({ onSuccess }: { onSuccess: () => void }) {
+function ProductForm({
+  onSuccess,
+  categories,
+}: {
+  onSuccess: () => void;
+  categories: Category[];
+}) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -257,6 +296,9 @@ function ProductForm({ onSuccess }: { onSuccess: () => void }) {
     amenities: "",
     duration: "",
     meetingPoint: "",
+    categoryId: "",
+    availableFrom: "",
+    availableTo: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -274,6 +316,9 @@ function ProductForm({ onSuccess }: { onSuccess: () => void }) {
           amenities: formData.amenities
             ? formData.amenities.split(",").map((a) => a.trim())
             : [],
+          categoryId: formData.categoryId || null,
+          availableFrom: formData.availableFrom || null,
+          availableTo: formData.availableTo || null,
         }),
       });
 
@@ -342,11 +387,56 @@ function ProductForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div>
+        <label className="text-sm font-medium mb-2 block">หมวดหมู่</label>
+        <Select
+          value={formData.categoryId || "none"}
+          onValueChange={(value) =>
+            setFormData({ ...formData, categoryId: value === "none" ? "" : value })
+          }
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="เลือกหมวดหมู่" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">ไม่ระบุ</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>
+                {cat.nameTh}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
         <label className="text-sm font-medium mb-2 block">รายละเอียด (TH)</label>
         <Input
           value={formData.descTh}
           onChange={(e) => setFormData({ ...formData, descTh: e.target.value })}
         />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-sm font-medium mb-2 block">วันที่เริ่มใช้งาน</label>
+          <Input
+            type="date"
+            value={formData.availableFrom}
+            onChange={(e) =>
+              setFormData({ ...formData, availableFrom: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block">วันที่สิ้นสุดใช้งาน</label>
+          <Input
+            type="date"
+            value={formData.availableTo}
+            onChange={(e) =>
+              setFormData({ ...formData, availableTo: e.target.value })
+            }
+          />
+        </div>
       </div>
 
       {formData.type === "ROOM" && (

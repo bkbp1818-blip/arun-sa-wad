@@ -13,6 +13,7 @@ export async function GET() {
 
     const products = await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
+      include: { category: true },
     });
 
     return NextResponse.json(products);
@@ -48,6 +49,9 @@ export async function POST(request: Request) {
       duration,
       meetingPoint,
       schedule,
+      categoryId,
+      availableFrom,
+      availableTo,
     } = body;
 
     const product = await prisma.product.create({
@@ -65,6 +69,9 @@ export async function POST(request: Request) {
         duration,
         meetingPoint,
         schedule,
+        categoryId: categoryId || null,
+        availableFrom: availableFrom ? new Date(availableFrom) : null,
+        availableTo: availableTo ? new Date(availableTo) : null,
       },
     });
 

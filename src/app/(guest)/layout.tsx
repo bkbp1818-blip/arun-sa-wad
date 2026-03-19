@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { ReferralTracker } from "@/components/shared/ReferralTracker";
+import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
 
 export default function GuestLayout({
   children,
@@ -13,6 +14,7 @@ export default function GuestLayout({
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <ChatWidgetLoader />
     </div>
   );
 }

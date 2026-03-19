@@ -97,6 +97,18 @@ model Product {
   meetingPoint String?
   schedule    Json?       // Available days/times
 
+  // Location (for maps)
+  latitude    Float?
+  longitude   Float?
+
+  // Category
+  categoryId  String?
+  category    Category?   @relation(fields: [categoryId], references: [id])
+
+  // วันที่เริ่มและสิ้นสุดใช้งาน
+  availableFrom DateTime?  // วันที่เริ่มใช้งาน
+  availableTo   DateTime?  // วันที่สิ้นสุดใช้งาน
+
   // Relations
   bookingItems BookingItem[]
 
@@ -110,6 +122,20 @@ enum ProductType {
   FOOD          // อาหาร/Street Food
   MERCH         // ของฝาก/Starter Kit
   SERVICE       // บริการเสริม (Late checkout, Luggage, Transfer)
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    // ชื่อภาษาอังกฤษ
+  nameTh      String    // ชื่อภาษาไทย
+  slug        String    @unique
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+
+  products    Product[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 // ==================== BOOKINGS ====================
