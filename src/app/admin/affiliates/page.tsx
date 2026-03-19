@@ -69,7 +69,9 @@ export default function AdminAffiliatesPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <>
+        {/* Desktop Table */}
+        <Card className="hidden sm:block">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -116,6 +118,34 @@ export default function AdminAffiliatesPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mobile Cards */}
+        <div className="sm:hidden space-y-3">
+          {affiliates.map((affiliate) => (
+            <Card key={affiliate.id}>
+              <CardContent className="p-4 space-y-2">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0">
+                    <p className="font-medium">{affiliate.user.name || "No name"}</p>
+                    <p className="text-sm text-muted-foreground truncate">{affiliate.user.email}</p>
+                  </div>
+                  <Badge variant={affiliate.isActive ? "default" : "secondary"} className="shrink-0 ml-2">
+                    {affiliate.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between text-sm pt-1">
+                  <span className="font-mono text-muted-foreground">{affiliate.referralCode}</span>
+                  <span className="font-semibold text-primary">{Number(affiliate.totalEarned).toLocaleString()} ฿</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span>Clicks: {affiliate.totalClicks}</span>
+                  <span>Bookings: {affiliate.totalBookings}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        </>
       )}
     </div>
   );

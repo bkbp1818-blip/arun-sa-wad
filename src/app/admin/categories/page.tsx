@@ -116,7 +116,9 @@ export default function AdminCategoriesPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <>
+        {/* Desktop Table */}
+        <Card className="hidden sm:block">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -185,6 +187,64 @@ export default function AdminCategoriesPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mobile Cards */}
+        <div className="sm:hidden space-y-3">
+          {categories.map((category) => (
+            <Card key={category.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="min-w-0">
+                    <p className="font-medium">{category.name}</p>
+                    <p className="text-sm text-muted-foreground">{category.nameTh}</p>
+                  </div>
+                  <Badge variant={category.isActive ? "default" : "secondary"} className="shrink-0 ml-2">
+                    {category.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-sm text-muted-foreground">{category._count.products} รายการ</span>
+                  <div className="flex items-center gap-1">
+                    <Dialog
+                      open={editingCategory?.id === category.id}
+                      onOpenChange={(open) =>
+                        setEditingCategory(open ? category : null)
+                      }
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-9">
+                          <Pencil className="h-3.5 w-3.5 mr-1" />
+                          แก้ไข
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>แก้ไขหมวดหมู่</DialogTitle>
+                        </DialogHeader>
+                        <CategoryForm
+                          category={category}
+                          onSuccess={() => {
+                            setEditingCategory(null);
+                            fetchCategories();
+                          }}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-9 text-destructive border-destructive/30"
+                      onClick={() => handleDelete(category.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        </>
       )}
     </div>
   );

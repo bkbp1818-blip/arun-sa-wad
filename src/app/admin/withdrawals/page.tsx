@@ -154,77 +154,136 @@ export default function AdminWithdrawalsPage() {
               ไม่มีคำขอถอนเงินที่รอดำเนินการ
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr>
-                    <th className="text-left p-4 font-medium">ตัวแทน</th>
-                    <th className="text-left p-4 font-medium">บัญชีธนาคาร</th>
-                    <th className="text-left p-4 font-medium">จำนวน</th>
-                    <th className="text-left p-4 font-medium">วันที่แจ้ง</th>
-                    <th className="text-left p-4 font-medium">ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pendingWithdrawals.map((withdrawal) => (
-                    <tr key={withdrawal.id} className="border-t">
-                      <td className="p-4">
-                        <div>
-                          <p className="font-medium">
-                            {withdrawal.affiliate.user.name || "ไม่ระบุชื่อ"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {withdrawal.affiliate.user.email}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-sm">
-                          <p>{withdrawal.affiliate.bankName}</p>
-                          <p className="font-mono">{withdrawal.affiliate.bankAccount}</p>
-                          <p className="text-muted-foreground">
-                            {withdrawal.affiliate.bankAccountName}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="p-4 font-bold text-lg">
+            <>
+              {/* Desktop Table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="text-left p-4 font-medium">ตัวแทน</th>
+                      <th className="text-left p-4 font-medium">บัญชีธนาคาร</th>
+                      <th className="text-left p-4 font-medium">จำนวน</th>
+                      <th className="text-left p-4 font-medium">วันที่แจ้ง</th>
+                      <th className="text-left p-4 font-medium">ดำเนินการ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingWithdrawals.map((withdrawal) => (
+                      <tr key={withdrawal.id} className="border-t">
+                        <td className="p-4">
+                          <div>
+                            <p className="font-medium">
+                              {withdrawal.affiliate.user.name || "ไม่ระบุชื่อ"}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {withdrawal.affiliate.user.email}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-sm">
+                            <p>{withdrawal.affiliate.bankName}</p>
+                            <p className="font-mono">{withdrawal.affiliate.bankAccount}</p>
+                            <p className="text-muted-foreground">
+                              {withdrawal.affiliate.bankAccountName}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="p-4 font-bold text-lg">
+                          {Number(withdrawal.amount).toLocaleString()} ฿
+                        </td>
+                        <td className="p-4 text-sm">
+                          {new Date(withdrawal.createdAt).toLocaleDateString("th-TH", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
+                        <td className="p-4">
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => openDialog(withdrawal, "approve")}
+                              disabled={processing === withdrawal.id}
+                            >
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              อนุมัติ
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => openDialog(withdrawal, "reject")}
+                              disabled={processing === withdrawal.id}
+                            >
+                              <XCircle className="h-4 w-4 mr-1" />
+                              ปฏิเสธ
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="sm:hidden divide-y">
+                {pendingWithdrawals.map((withdrawal) => (
+                  <div key={withdrawal.id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0">
+                        <p className="font-medium">
+                          {withdrawal.affiliate.user.name || "ไม่ระบุชื่อ"}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {withdrawal.affiliate.user.email}
+                        </p>
+                      </div>
+                      <span className="font-bold text-lg text-primary shrink-0 ml-2">
                         {Number(withdrawal.amount).toLocaleString()} ฿
-                      </td>
-                      <td className="p-4 text-sm">
+                      </span>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>{withdrawal.affiliate.bankName} - <span className="font-mono">{withdrawal.affiliate.bankAccount}</span></p>
+                      <p>{withdrawal.affiliate.bankAccountName}</p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">
                         {new Date(withdrawal.createdAt).toLocaleDateString("th-TH", {
-                          year: "numeric",
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => openDialog(withdrawal, "approve")}
-                            disabled={processing === withdrawal.id}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            อนุมัติ
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => openDialog(withdrawal, "reject")}
-                            disabled={processing === withdrawal.id}
-                          >
-                            <XCircle className="h-4 w-4 mr-1" />
-                            ปฏิเสธ
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      </span>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="h-9"
+                          onClick={() => openDialog(withdrawal, "approve")}
+                          disabled={processing === withdrawal.id}
+                        >
+                          <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                          อนุมัติ
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="h-9"
+                          onClick={() => openDialog(withdrawal, "reject")}
+                          disabled={processing === withdrawal.id}
+                        >
+                          <XCircle className="h-3.5 w-3.5 mr-1" />
+                          ปฏิเสธ
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -240,50 +299,79 @@ export default function AdminWithdrawalsPage() {
               ยังไม่มีประวัติ
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50">
-                  <tr>
-                    <th className="text-left p-4 font-medium">ตัวแทน</th>
-                    <th className="text-left p-4 font-medium">จำนวน</th>
-                    <th className="text-left p-4 font-medium">สถานะ</th>
-                    <th className="text-left p-4 font-medium">เลขอ้างอิง</th>
-                    <th className="text-left p-4 font-medium">วันที่ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {processedWithdrawals.map((withdrawal) => (
-                    <tr key={withdrawal.id} className="border-t">
-                      <td className="p-4">
-                        <p className="font-medium">
-                          {withdrawal.affiliate.user.name || withdrawal.affiliate.user.email}
-                        </p>
-                      </td>
-                      <td className="p-4 font-medium">
-                        {Number(withdrawal.amount).toLocaleString()} ฿
-                      </td>
-                      <td className="p-4">
-                        <Badge variant={statusColors[withdrawal.status]}>
-                          {statusLabels[withdrawal.status]}
-                        </Badge>
-                      </td>
-                      <td className="p-4 text-sm font-mono">
-                        {withdrawal.transferRef || "-"}
-                      </td>
-                      <td className="p-4 text-sm">
-                        {withdrawal.processedAt
-                          ? new Date(withdrawal.processedAt).toLocaleDateString("th-TH", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })
-                          : "-"}
-                      </td>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="text-left p-4 font-medium">ตัวแทน</th>
+                      <th className="text-left p-4 font-medium">จำนวน</th>
+                      <th className="text-left p-4 font-medium">สถานะ</th>
+                      <th className="text-left p-4 font-medium">เลขอ้างอิง</th>
+                      <th className="text-left p-4 font-medium">วันที่ดำเนินการ</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {processedWithdrawals.map((withdrawal) => (
+                      <tr key={withdrawal.id} className="border-t">
+                        <td className="p-4">
+                          <p className="font-medium">
+                            {withdrawal.affiliate.user.name || withdrawal.affiliate.user.email}
+                          </p>
+                        </td>
+                        <td className="p-4 font-medium">
+                          {Number(withdrawal.amount).toLocaleString()} ฿
+                        </td>
+                        <td className="p-4">
+                          <Badge variant={statusColors[withdrawal.status]}>
+                            {statusLabels[withdrawal.status]}
+                          </Badge>
+                        </td>
+                        <td className="p-4 text-sm font-mono">
+                          {withdrawal.transferRef || "-"}
+                        </td>
+                        <td className="p-4 text-sm">
+                          {withdrawal.processedAt
+                            ? new Date(withdrawal.processedAt).toLocaleDateString("th-TH", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })
+                            : "-"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="sm:hidden divide-y">
+                {processedWithdrawals.map((withdrawal) => (
+                  <div key={withdrawal.id} className="py-3 flex items-center justify-between">
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm truncate">
+                        {withdrawal.affiliate.user.name || withdrawal.affiliate.user.email}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {withdrawal.processedAt
+                          ? new Date(withdrawal.processedAt).toLocaleDateString("th-TH", { month: "short", day: "numeric" })
+                          : "-"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                      <Badge variant={statusColors[withdrawal.status]} className="text-xs">
+                        {statusLabels[withdrawal.status]}
+                      </Badge>
+                      <span className="font-medium text-sm">
+                        {Number(withdrawal.amount).toLocaleString()} ฿
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

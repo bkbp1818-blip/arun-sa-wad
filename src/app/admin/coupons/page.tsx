@@ -118,7 +118,9 @@ export default function AdminCouponsPage() {
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <>
+        {/* Desktop Table */}
+        <Card className="hidden sm:block">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -175,6 +177,46 @@ export default function AdminCouponsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mobile Cards */}
+        <div className="sm:hidden space-y-3">
+          {coupons.map((coupon) => (
+            <Card key={coupon.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="min-w-0">
+                    <p className="font-mono font-semibold">{coupon.code}</p>
+                    <p className="text-sm text-muted-foreground">{coupon.partnerName}</p>
+                  </div>
+                  <Badge variant={coupon.isActive ? "default" : "secondary"} className="shrink-0 ml-2">
+                    {coupon.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="text-sm space-x-3">
+                    <span className="font-medium text-primary">
+                      {coupon.discountType === "PERCENT"
+                        ? `${coupon.discountValue}%`
+                        : `${Number(coupon.discountValue).toLocaleString()} ฿`}
+                    </span>
+                    <span className="text-muted-foreground">
+                      ใช้แล้ว {coupon.usedCount}{coupon.maxUses ? ` / ${coupon.maxUses}` : ""}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 text-destructive border-destructive/30"
+                    onClick={() => handleDelete(coupon.id)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        </>
       )}
     </div>
   );
