@@ -389,6 +389,7 @@ export function ExploreContent() {
   const [selectedOriginId, setSelectedOriginId] = useState<OriginOptionId>("chinatown");
   const [gpsPosition, setGpsPosition] = useState<{ lat: number; lng: number } | null>(null);
   const [gpsError, setGpsError] = useState<string | null>(null);
+  const [customOrigin, setCustomOrigin] = useState<{ lat: number; lng: number } | null>(null);
   const originScrollRef = useRef<HTMLDivElement>(null);
 
   // Compute the actual origin value from selectedOriginId
@@ -396,7 +397,9 @@ export function ExploreContent() {
     if (selectedOriginId === "current") {
       return gpsPosition ? { lat: gpsPosition.lat, lng: gpsPosition.lng } : "current";
     }
-    if (selectedOriginId === "custom") return "custom";
+    if (selectedOriginId === "custom") {
+      return customOrigin ? { lat: customOrigin.lat, lng: customOrigin.lng } : "custom";
+    }
     const branch = HOTEL_BRANCHES.find((b) => b.id === selectedOriginId);
     if (branch) return { lat: branch.lat, lng: branch.lng };
     return { lat: HOTEL_BRANCHES[0].lat, lng: HOTEL_BRANCHES[0].lng };
@@ -493,7 +496,13 @@ export function ExploreContent() {
   return (
     <div className="space-y-6">
       {/* Map */}
-      <ExploreMap places={filteredPlaces} origin={origin} selectedOriginId={selectedOriginId} />
+      <ExploreMap
+        places={filteredPlaces}
+        origin={origin}
+        selectedOriginId={selectedOriginId}
+        customOrigin={customOrigin}
+        onCustomOriginSelect={(lat, lng) => setCustomOrigin({ lat, lng })}
+      />
 
       {/* Filter Tabs */}
       <Tabs
@@ -571,6 +580,17 @@ export function ExploreContent() {
         )}
         {selectedOriginId === "current" && gpsPosition && (
           <p className="text-xs text-green-600">ได้ตำแหน่ง GPS แล้ว</p>
+        )}
+        {/* Custom origin hint */}
+        {selectedOriginId === "custom" && !customOrigin && (
+          <p className="text-xs text-green-600 animate-pulse">
+            👆 แตะบนแผนที่ด้านบนเพื่อเลือกจุดเริ่มต้น
+          </p>
+        )}
+        {selectedOriginId === "custom" && customOrigin && (
+          <p className="text-xs text-green-600">
+            ✅ เลือกจุดเริ่มต้นแล้ว — แตะจุดอื่นบนแผนที่เพื่อเปลี่ยน
+          </p>
         )}
       </div>
 

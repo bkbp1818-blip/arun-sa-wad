@@ -1,6 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { HOTEL_LOCATION, HOTEL_BRANCHES } from "@/lib/constants/nearby-places";
@@ -57,6 +58,17 @@ const gpsIcon = L.divIcon({
   popupAnchor: [0, -40],
 });
 
+const customOriginIcon = L.divIcon({
+  className: "",
+  html: `<div style="display:flex;flex-direction:column;align-items:center;">
+    <div style="background:#16a34a;color:white;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);white-space:nowrap;">📍 จุดเริ่มต้นของคุณ</div>
+    <div style="width:14px;height:14px;background:#16a34a;border-radius:50%;border:3px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);margin-top:4px;"></div>
+  </div>`,
+  iconSize: [120, 40],
+  iconAnchor: [60, 40],
+  popupAnchor: [0, -40],
+});
+
 export interface MapPlace {
   id: string;
   name: string;
@@ -76,9 +88,37 @@ interface ExploreMapProps {
   height?: string;
   origin?: OriginType;
   selectedOriginId?: string;
+  customOrigin?: { lat: number; lng: number } | null;
+  onCustomOriginSelect?: (lat: number, lng: number) => void;
 }
 
-export function ExploreMap({ places, height = "450px", origin, selectedOriginId }: ExploreMapProps) {
+// Component: จับ click event บนแผนที่
+function MapClickHandler({ onSelect }: { onSelect: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e) {
+      onSelect(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
+// Component: FlyTo เมื่อพิกัดเปลี่ยน
+function FlyToOnChange({ position }: { position: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(position, 14, { duration: 0.8 });
+  }, [map, position[0], position[1]]);
+  return null;
+}
+
+export function ExploreMap({
+  places,
+  height = "450px",
+  origin,
+  selectedOriginId,
+  customOrigin,
+  onCustomOriginSelect,
+}: ExploreMapProps) {
   // Determine map center and hotel marker based on origin
   const selectedBranch = HOTEL_BRANCHES.find((b) => b.id === selectedOriginId);
   const mapCenter: [number, number] = (() => {
@@ -89,8 +129,7 @@ export function ExploreMap({ places, height = "450px", origin, selectedOriginId 
     return [HOTEL_LOCATION.lat, HOTEL_LOCATION.lng];
   })();
 
-  // Show hotel marker only when a branch is selected
-  const showHotelMarker = selectedOriginId !== "custom";
+  // Show hotel marker only when a branch is selected (not custom)
   const hotelMarkerPosition: [number, number] | null = (() => {
     if (selectedOriginId === "custom") return null;
     if (origin && typeof origin === "object" && "lat" in origin) {
@@ -101,6 +140,7 @@ export function ExploreMap({ places, height = "450px", origin, selectedOriginId 
 
   const hotelLabel = selectedBranch?.nameTh || HOTEL_LOCATION.nameTh;
   const isGpsOrigin = selectedOriginId === "current";
+  const isCustomOrigin = selectedOriginId === "custom";
 
   return (
     <div className="rounded-lg overflow-hidden" style={{ height }}>
@@ -115,7 +155,17 @@ export function ExploreMap({ places, height = "450px", origin, selectedOriginId 
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Radius circle ~2.5km */}
+        {/* Click handler for custom origin */}
+        {isCustomOrigin && onCustomOriginSelect && (
+          <MapClickHandler onSelect={onCustomOriginSelect} />
+        )}
+
+        {/* FlyTo when custom origin changes */}
+        {isCustomOrigin && customOrigin && (
+          <FlyToOnChange position={[customOrigin.lat, customOrigin.lng]} />
+        )}
+
+        {/* Radius circle ~2.5km for hotel/GPS origin */}
         {hotelMarkerPosition && (
           <Circle
             center={hotelMarkerPosition}
@@ -147,6 +197,36 @@ export function ExploreMap({ places, height = "450px", origin, selectedOriginId 
               </div>
             </Popup>
           </Marker>
+        )}
+
+        {/* Custom origin marker + radius circle */}
+        {isCustomOrigin && customOrigin && (
+          <>
+            <Circle
+              center={[customOrigin.lat, customOrigin.lng]}
+              radius={2500}
+              pathOptions={{
+                color: "#16a34a",
+                fillColor: "#16a34a",
+                fillOpacity: 0.05,
+                weight: 1,
+                dashArray: "5, 10",
+              }}
+            />
+            <Marker
+              position={[customOrigin.lat, customOrigin.lng]}
+              icon={customOriginIcon}
+            >
+              <Popup>
+                <div className="max-w-[200px]">
+                  <h3 className="font-bold text-sm">📍 จุดเริ่มต้นของคุณ</h3>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {customOrigin.lat.toFixed(5)}, {customOrigin.lng.toFixed(5)}
+                  </p>
+                </div>
+              </Popup>
+            </Marker>
+          </>
         )}
 
         {/* Place Markers */}
