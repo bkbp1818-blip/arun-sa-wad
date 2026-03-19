@@ -3,13 +3,25 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import {
-  HOTEL_LOCATION,
-  EXPLORE_PLACES,
-  EXPLORE_TYPE_COLORS,
-  EXPLORE_TYPE_LABELS,
-  type ExplorePlace,
-} from "@/lib/constants/explore-places";
+import { HOTEL_LOCATION } from "@/lib/constants/nearby-places";
+
+const TYPE_COLORS: Record<string, string> = {
+  temple: "#E74C3C",
+  food: "#27AE60",
+  market: "#F39C12",
+  landmark: "#9B59B6",
+  museum: "#3498DB",
+  event: "#E91E63",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  temple: "วัด",
+  food: "ร้านอาหาร",
+  market: "ตลาด",
+  landmark: "สถานที่สำคัญ",
+  museum: "พิพิธภัณฑ์",
+  event: "เทศกาล",
+};
 
 function createColoredIcon(color: string) {
   return L.divIcon({
@@ -32,8 +44,20 @@ const hotelIcon = L.divIcon({
   popupAnchor: [0, -40],
 });
 
+export interface MapPlace {
+  id: string;
+  name: string;
+  nameTh: string;
+  lat: number;
+  lng: number;
+  type: string;
+  description: string;
+  distance: string;
+  openingHours?: string | null;
+}
+
 interface ExploreMapProps {
-  places: ExplorePlace[];
+  places: MapPlace[];
   height?: string;
 }
 
@@ -82,9 +106,9 @@ export function ExploreMap({ places, height = "450px" }: ExploreMapProps) {
         {/* Place Markers */}
         {places.map((place) => (
           <Marker
-            key={place.name}
+            key={place.id}
             position={[place.lat, place.lng]}
-            icon={createColoredIcon(EXPLORE_TYPE_COLORS[place.type])}
+            icon={createColoredIcon(TYPE_COLORS[place.type] || "#888")}
           >
             <Popup>
               <div className="max-w-[240px]">
@@ -92,11 +116,11 @@ export function ExploreMap({ places, height = "450px" }: ExploreMapProps) {
                   <span
                     className="w-2 h-2 rounded-full inline-block"
                     style={{
-                      backgroundColor: EXPLORE_TYPE_COLORS[place.type],
+                      backgroundColor: TYPE_COLORS[place.type] || "#888",
                     }}
                   />
                   <span className="text-xs text-gray-500">
-                    {EXPLORE_TYPE_LABELS[place.type]}
+                    {TYPE_LABELS[place.type] || place.type}
                   </span>
                 </div>
                 <h3 className="font-bold text-sm">{place.nameTh}</h3>

@@ -10,6 +10,7 @@ import {
   Users,
   Ticket,
   Wallet,
+  MapPin,
   ArrowLeft,
   Menu,
 } from "lucide-react";
@@ -42,6 +43,11 @@ const navItems = [
     title: "ถอนเงิน",
     href: "/admin/withdrawals",
     icon: Wallet,
+  },
+  {
+    title: "สถานที่สำรวจ",
+    href: "/admin/explore",
+    icon: MapPin,
   },
   {
     title: "คูปอง",
