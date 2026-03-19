@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, ImageIcon } from "lucide-react";
 import type { Product } from "@prisma/client";
 
 interface TourCardProps {
@@ -30,6 +30,12 @@ export function TourCard({ tour }: TourCardProps) {
         {tour.duration && (
           <Badge className="absolute top-2 left-2" variant="secondary">
             {tour.duration}
+          </Badge>
+        )}
+        {tour.images.length > 1 && (
+          <Badge className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/60 text-white border-0 flex items-center gap-1">
+            <ImageIcon className="h-3 w-3" />
+            {tour.images.length} รูป
           </Badge>
         )}
       </div>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Clock, MapPin, Calendar } from "lucide-react";
+import { ImageGallery } from "@/components/products/ImageGallery";
 import { TourMeetingPointSection } from "./TourMeetingPointSection";
 
 interface TourDetailPageProps {
@@ -51,20 +52,8 @@ export default async function TourDetailPage({ params }: TourDetailPageProps) {
       </Link>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        {/* Image */}
-        <div className="relative aspect-[4/3] bg-muted rounded-lg overflow-hidden">
-          {tour.images[0] ? (
-            <img
-              src={tour.images[0]}
-              alt={tour.nameTh}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              No Image
-            </div>
-          )}
-        </div>
+        {/* Image Gallery */}
+        <ImageGallery images={tour.images} alt={tour.nameTh} />
 
         {/* Details */}
         <div>

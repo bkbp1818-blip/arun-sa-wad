@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, X, Loader2 } from "lucide-react";
+import { ImagePlus, X, Loader2, Star } from "lucide-react";
 
 interface ImageUploadProps {
   images: string[];
@@ -82,6 +82,14 @@ export function ImageUpload({ images, onChange, maxImages = 5 }: ImageUploadProp
     onChange(images.filter((_, i) => i !== index));
   }
 
+  function setAsCover(index: number) {
+    if (index === 0) return;
+    const newImages = [...images];
+    const [moved] = newImages.splice(index, 1);
+    newImages.unshift(moved);
+    onChange(newImages);
+  }
+
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium block">
@@ -108,10 +116,20 @@ export function ImageUpload({ images, onChange, maxImages = 5 }: ImageUploadProp
               >
                 <X className="h-3.5 w-3.5" />
               </button>
-              {index === 0 && (
-                <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+              {index === 0 ? (
+                <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                   หน้าปก
                 </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAsCover(index)}
+                  className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 hover:bg-black/80"
+                >
+                  <Star className="h-3 w-3" />
+                  ตั้งเป็นหน้าปก
+                </button>
               )}
             </div>
           ))}
