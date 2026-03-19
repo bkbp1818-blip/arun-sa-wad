@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import {
   MapPin,
@@ -8,6 +8,7 @@ import {
   Clock,
   Ticket,
   Navigation,
+  ImageIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,26 +53,81 @@ const FILTER_OPTIONS: { value: FilterType; label: string }[] = [
 
 function PlaceCard({ place }: { place: ExplorePlace }) {
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${HOTEL_LOCATION.lat},${HOTEL_LOCATION.lng}&destination=${place.lat},${place.lng}&travelmode=walking`;
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hasMultipleImages = place.images.length > 1;
+
+  const startCycling = useCallback(() => {
+    if (!hasMultipleImages) return;
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % place.images.length);
+    }, 1500);
+  }, [hasMultipleImages, place.images.length]);
+
+  const stopCycling = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setCurrentIndex(0);
+  }, []);
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden group hover:shadow-lg transition-shadow">
+      {/* Image with auto-cycle on hover */}
+      <div
+        className="relative aspect-[4/3] bg-muted"
+        onMouseEnter={startCycling}
+        onMouseLeave={stopCycling}
+      >
+        {place.images[0] ? (
+          <img
+            src={place.images[currentIndex] || place.images[0]}
+            alt={place.nameTh}
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+            No Image
+          </div>
+        )}
+        {/* Type badge top-left */}
+        <Badge
+          className="absolute top-2 left-2 text-white text-[10px]"
+          style={{ backgroundColor: EXPLORE_TYPE_COLORS[place.type] }}
+        >
+          {EXPLORE_TYPE_LABELS[place.type]}
+        </Badge>
+        {hasMultipleImages && (
+          <>
+            <Badge className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/60 text-white border-0 flex items-center gap-1">
+              <ImageIcon className="h-3 w-3" />
+              {place.images.length} รูป
+            </Badge>
+            {/* Dot indicators */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+              {place.images.map((_, index) => (
+                <span
+                  key={index}
+                  className={`block h-1.5 w-1.5 rounded-full transition-colors ${
+                    index === currentIndex ? "bg-white" : "bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
       <CardContent className="p-4 sm:p-5">
         {/* Header */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="min-w-0">
-            <h3 className="font-semibold text-sm sm:text-base leading-tight">
-              {place.nameTh}
-            </h3>
-            <p className="text-xs text-muted-foreground truncate">
-              {place.name}
-            </p>
-          </div>
-          <Badge
-            className="shrink-0 text-white text-[10px]"
-            style={{ backgroundColor: EXPLORE_TYPE_COLORS[place.type] }}
-          >
-            {EXPLORE_TYPE_LABELS[place.type]}
-          </Badge>
+        <div className="mb-2">
+          <h3 className="font-semibold text-sm sm:text-base leading-tight">
+            {place.nameTh}
+          </h3>
+          <p className="text-xs text-muted-foreground truncate">
+            {place.name}
+          </p>
         </div>
 
         {/* Description */}

@@ -21,7 +21,7 @@ export interface ExplorePlace {
   openingHours?: string;
   admissionFee?: string;
   highlights?: string[];
-  image?: string;
+  images: string[];
 }
 
 export const EXPLORE_PLACES: ExplorePlace[] = [
@@ -38,6 +38,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "06:00–18:00 ทุกวัน",
     admissionFee: "ฟรี",
     highlights: ["วัดจีนเก่าแก่", "สถาปัตยกรรมจีน"],
+    images: [
+      "https://images.unsplash.com/photo-1609946860441-a51ffcf22208?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Wat Traimit Withayaram",
@@ -51,6 +58,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "08:00–17:00 ทุกวัน",
     admissionFee: "40 บาท",
     highlights: ["พระพุทธรูปทองคำ", "มรดกโลก"],
+    images: [
+      "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1583266643890-d1e2aaeda81c?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Wat Chakrawat Rachawat",
@@ -64,6 +78,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "06:00–18:00 ทุกวัน",
     admissionFee: "ฟรี",
     highlights: ["วัดเก่าสมัยอยุธยา"],
+    images: [
+      "https://images.unsplash.com/photo-1564648351416-3eec9f3e85de?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1570358934836-6802981e481e?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Wat Pho",
@@ -78,6 +99,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "08:00–18:30 ทุกวัน",
     admissionFee: "200 บาท",
     highlights: ["มรดกโลก", "พระพุทธไสยาสน์", "นวดแผนไทย"],
+    images: [
+      "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1583266643890-d1e2aaeda81c?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1607532941433-304659e8198a?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Wat Arun Ratchawararam",
@@ -92,6 +120,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "08:00–18:00 ทุกวัน",
     admissionFee: "100 บาท",
     highlights: ["มรดกโลก", "พระปรางค์", "วิวแม่น้ำ"],
+    images: [
+      "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1609946860441-a51ffcf22208?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&h=400&fit=crop",
+    ],
   },
 
   // === ร้านอาหาร 5 แห่ง ===
@@ -106,6 +141,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     phone: "02-236-4519",
     openingHours: "16:00–01:00 ทุกวัน",
     highlights: ["Michelin Bib Gourmand", "กุ้งเผา"],
+    images: [
+      "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1562967916-eb82221dfb44?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Lek & Rut Seafood",
@@ -118,6 +160,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     phone: "02-222-1539",
     openingHours: "15:30–01:00 ทุกวัน",
     highlights: ["ปูผัดผงกะหรี่"],
+    images: [
+      "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1562967916-eb82221dfb44?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Nai Ek Roll Noodles",
@@ -130,6 +179,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     phone: "02-222-6839",
     openingHours: "10:00–22:00 (หยุดจันทร์)",
     highlights: ["Michelin Bib Gourmand", "ร้านเก่าแก่"],
+    images: [
+      "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1562967916-eb82221dfb44?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Uan Pochana",
@@ -141,6 +197,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     distance: "250 ม.",
     openingHours: "08:30–20:30 ทุกวัน",
     highlights: ["ข้าวหมูแดง"],
+    images: [
+      "https://images.unsplash.com/photo-1562967916-eb82221dfb44?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Jek Pui Curry Rice",
@@ -152,6 +215,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     distance: "300 ม.",
     openingHours: "06:00–14:00 (หยุดอาทิตย์)",
     highlights: ["ข้าวแกงยอดนิยม"],
+    images: [
+      "https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop",
+    ],
   },
 
   // === ตลาด 2 แห่ง ===
@@ -165,6 +235,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     distance: "400 ม.",
     openingHours: "08:00–18:00 ทุกวัน",
     highlights: ["ตลาดค้าส่ง", "ราคาถูก"],
+    images: [
+      "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1513639776629-7b61b0ac49cb?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1519566335946-e6f65f0f4fdf?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Pak Khlong Talat",
@@ -176,6 +253,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     distance: "1.5 กม.",
     openingHours: "24 ชั่วโมง",
     highlights: ["ตลาดดอกไม้", "เปิด 24 ชม."],
+    images: [
+      "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1462275646964-a0e3c11f18a6?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&h=400&fit=crop",
+    ],
   },
 
   // === พิพิธภัณฑ์ 2 แห่ง ===
@@ -190,6 +274,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "10:00–18:00 (หยุดจันทร์)",
     admissionFee: "ฟรี",
     highlights: ["ฟรี", "ประวัติศาสตร์"],
+    images: [
+      "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1609946860441-a51ffcf22208?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Hua Lamphong Station",
@@ -202,6 +293,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "ดูได้จากภายนอก ตลอด 24 ชม.",
     admissionFee: "ฟรี",
     highlights: ["สถาปัตยกรรม", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?w=600&h=400&fit=crop",
+    ],
   },
 
   // === แลนด์มาร์ค 4 แห่ง ===
@@ -218,6 +316,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "08:30–15:30 ทุกวัน",
     admissionFee: "500 บาท",
     highlights: ["มรดกโลก", "พระแก้วมรกต"],
+    images: [
+      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1528181304800-259b08848526?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1596436889106-be35e843f974?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1583266643890-d1e2aaeda81c?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Talat Noi Street Art",
@@ -230,6 +335,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "เปิดตลอด (ร้านค้า 10:00–20:00)",
     admissionFee: "ฟรี",
     highlights: ["Street Art", "คาเฟ่", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1564648351416-3eec9f3e85de?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Yaowarat Road",
@@ -242,6 +354,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "ป้ายไฟสวยช่วง 18:00–00:00",
     admissionFee: "ฟรี",
     highlights: ["ป้ายไฟเยาวราช", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1609946860441-a51ffcf22208?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Odeon Circle",
@@ -254,6 +373,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "เปิดตลอด",
     admissionFee: "ฟรี",
     highlights: ["ซุ้มประตูจีน", "จุดถ่ายรูป", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1609946860441-a51ffcf22208?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=600&h=400&fit=crop",
+    ],
   },
 
   // === เทศกาล 3 งาน ===
@@ -268,6 +394,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "ปลายมกราคม–กุมภาพันธ์ (ตามปฏิทินจันทรคติ)",
     admissionFee: "ฟรี",
     highlights: ["เทศกาลใหญ่", "ขบวนมังกร", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Vegetarian Festival",
@@ -280,6 +413,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "กันยายน–ตุลาคม (ตามปฏิทินจันทรคติ)",
     admissionFee: "ฟรี",
     highlights: ["อาหารเจ", "ธงเหลือง", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop",
+    ],
   },
   {
     name: "Mid-Autumn Festival",
@@ -292,6 +432,13 @@ export const EXPLORE_PLACES: ExplorePlace[] = [
     openingHours: "กันยายน–ตุลาคม (ตามปฏิทินจันทรคติ)",
     admissionFee: "ฟรี",
     highlights: ["ขนมไหว้", "ฟรี"],
+    images: [
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&h=400&fit=crop",
+    ],
   },
 ];
 
