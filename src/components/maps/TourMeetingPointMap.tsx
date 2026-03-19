@@ -1,8 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { HOTEL_LOCATION } from "@/lib/constants/nearby-places";
+
+const hotelIcon = L.divIcon({
+  className: "",
+  html: `<div style="display:flex;flex-direction:column;align-items:center;">
+    <div style="background:#dc2626;color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.3);">โรงแรม</div>
+    <div style="width:10px;height:10px;background:#dc2626;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);margin-top:2px;"></div>
+  </div>`,
+  iconSize: [60, 30],
+  iconAnchor: [30, 30],
+  popupAnchor: [0, -30],
+});
+
+const meetingIcon = L.divIcon({
+  className: "",
+  html: `<div style="display:flex;flex-direction:column;align-items:center;">
+    <div style="background:#2563eb;color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:bold;box-shadow:0 2px 4px rgba(0,0,0,0.3);">จุดนัดพบ</div>
+    <div style="width:10px;height:10px;background:#2563eb;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);margin-top:2px;"></div>
+  </div>`,
+  iconSize: [70, 30],
+  iconAnchor: [35, 30],
+  popupAnchor: [0, -30],
+});
 
 interface TourMeetingPointMapProps {
   meetingPointName: string;
@@ -17,76 +40,32 @@ export function TourMeetingPointMap({
   lng,
   height = "300px",
 }: TourMeetingPointMapProps) {
-  const [showMeetingInfo, setShowMeetingInfo] = useState(false);
-
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-  if (!apiKey) {
-    return (
-      <div
-        className="bg-muted rounded-lg flex items-center justify-center"
-        style={{ height }}
-      >
-        <div className="text-center text-muted-foreground p-4">
-          <p className="text-sm">แผนที่ไม่พร้อมใช้งาน</p>
-          <a
-            href={`https://www.google.com/maps/dir/?api=1&origin=${HOTEL_LOCATION.lat},${HOTEL_LOCATION.lng}&destination=${lat},${lng}&travelmode=walking`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-primary underline mt-2 inline-block"
-          >
-            ดูเส้นทางใน Google Maps
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  // Center between hotel and meeting point
   const centerLat = (HOTEL_LOCATION.lat + lat) / 2;
   const centerLng = (HOTEL_LOCATION.lng + lng) / 2;
 
   return (
     <div className="rounded-lg overflow-hidden" style={{ height }}>
-      <Map
-        defaultCenter={{ lat: centerLat, lng: centerLng }}
-        defaultZoom={16}
-        mapId="tour-meeting-map"
-        gestureHandling="cooperative"
-        disableDefaultUI={false}
+      <MapContainer
+        center={[centerLat, centerLng]}
+        zoom={16}
+        scrollWheelZoom={false}
         style={{ width: "100%", height: "100%" }}
       >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
         {/* Hotel Marker */}
-        <AdvancedMarker
-          position={{ lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng }}
-        >
-          <div className="flex flex-col items-center">
-            <div className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold shadow">
-              โรงแรม
-            </div>
-            <div className="w-2.5 h-2.5 bg-red-600 rounded-full border-2 border-white shadow mt-0.5" />
-          </div>
-        </AdvancedMarker>
+        <Marker
+          position={[HOTEL_LOCATION.lat, HOTEL_LOCATION.lng]}
+          icon={hotelIcon}
+        />
 
         {/* Meeting Point Marker */}
-        <AdvancedMarker
-          position={{ lat, lng }}
-          onClick={() => setShowMeetingInfo(true)}
-        >
-          <div className="flex flex-col items-center">
-            <div className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold shadow">
-              จุดนัดพบ
-            </div>
-            <div className="w-2.5 h-2.5 bg-blue-600 rounded-full border-2 border-white shadow mt-0.5" />
-          </div>
-        </AdvancedMarker>
-
-        {showMeetingInfo && (
-          <InfoWindow
-            position={{ lat, lng }}
-            onCloseClick={() => setShowMeetingInfo(false)}
-          >
-            <div className="p-1 max-w-[200px]">
+        <Marker position={[lat, lng]} icon={meetingIcon}>
+          <Popup>
+            <div className="max-w-[200px]">
               <h3 className="font-bold text-sm">จุดนัดพบ</h3>
               <p className="text-xs text-gray-600">{meetingPointName}</p>
               <a
@@ -98,9 +77,9 @@ export function TourMeetingPointMap({
                 ดูเส้นทาง
               </a>
             </div>
-          </InfoWindow>
-        )}
-      </Map>
+          </Popup>
+        </Marker>
+      </MapContainer>
     </div>
   );
 }

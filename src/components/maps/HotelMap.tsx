@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import {
-  Map,
-  AdvancedMarker,
-  InfoWindow,
-  useMap,
-} from "@vis.gl/react-google-maps";
+import { useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import {
   HOTEL_LOCATION,
   NEARBY_PLACES,
@@ -14,6 +11,38 @@ import {
   PLACE_TYPE_LABELS,
   type NearbyPlace,
 } from "@/lib/constants/nearby-places";
+
+// Fix Leaflet default icon issue in Next.js
+const defaultIcon = L.icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+function createColoredIcon(color: string) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    popupAnchor: [0, -10],
+  });
+}
+
+const hotelIcon = L.divIcon({
+  className: "",
+  html: `<div style="display:flex;flex-direction:column;align-items:center;">
+    <div style="background:#dc2626;color:white;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.3);white-space:nowrap;">${HOTEL_LOCATION.nameTh}</div>
+    <div style="width:12px;height:12px;background:#dc2626;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);margin-top:4px;"></div>
+  </div>`,
+  iconSize: [100, 40],
+  iconAnchor: [50, 40],
+  popupAnchor: [0, -40],
+});
 
 interface HotelMapProps {
   height?: string;
@@ -24,62 +53,26 @@ export function HotelMap({
   height = "400px",
   showNearbyPlaces = true,
 }: HotelMapProps) {
-  const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
-  const [showHotelInfo, setShowHotelInfo] = useState(false);
-
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-  if (!apiKey) {
-    return (
-      <div
-        className="bg-muted rounded-lg flex items-center justify-center"
-        style={{ height }}
-      >
-        <div className="text-center text-muted-foreground p-4">
-          <p className="font-medium">แผนที่ไม่พร้อมใช้งาน</p>
-          <p className="text-sm mt-1">กรุณาตั้งค่า Google Maps API Key</p>
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${HOTEL_LOCATION.lat},${HOTEL_LOCATION.lng}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-primary underline mt-2 inline-block"
-          >
-            เปิดใน Google Maps
-          </a>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="rounded-lg overflow-hidden" style={{ height }}>
-      <Map
-        defaultCenter={{ lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng }}
-        defaultZoom={16}
-        mapId="hotel-map"
-        gestureHandling="cooperative"
-        disableDefaultUI={false}
+      <MapContainer
+        center={[HOTEL_LOCATION.lat, HOTEL_LOCATION.lng]}
+        zoom={16}
+        scrollWheelZoom={false}
         style={{ width: "100%", height: "100%" }}
       >
-        {/* Hotel Marker */}
-        <AdvancedMarker
-          position={{ lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng }}
-          onClick={() => setShowHotelInfo(true)}
-        >
-          <div className="flex flex-col items-center">
-            <div className="bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg whitespace-nowrap">
-              {HOTEL_LOCATION.nameTh}
-            </div>
-            <div className="w-3 h-3 bg-red-600 rounded-full border-2 border-white shadow mt-1" />
-          </div>
-        </AdvancedMarker>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-        {showHotelInfo && (
-          <InfoWindow
-            position={{ lat: HOTEL_LOCATION.lat, lng: HOTEL_LOCATION.lng }}
-            onCloseClick={() => setShowHotelInfo(false)}
-          >
-            <div className="p-1 max-w-[200px]">
+        {/* Hotel Marker */}
+        <Marker
+          position={[HOTEL_LOCATION.lat, HOTEL_LOCATION.lng]}
+          icon={hotelIcon}
+        >
+          <Popup>
+            <div className="max-w-[200px]">
               <h3 className="font-bold text-sm">{HOTEL_LOCATION.nameTh}</h3>
               <p className="text-xs text-gray-600 mt-1">
                 {HOTEL_LOCATION.address}
@@ -93,63 +86,53 @@ export function HotelMap({
                 เปิดใน Google Maps
               </a>
             </div>
-          </InfoWindow>
-        )}
+          </Popup>
+        </Marker>
 
         {/* Nearby Places Markers */}
         {showNearbyPlaces &&
           NEARBY_PLACES.map((place) => (
-            <AdvancedMarker
+            <Marker
               key={place.name}
-              position={{ lat: place.lat, lng: place.lng }}
-              onClick={() => setSelectedPlace(place)}
+              position={[place.lat, place.lng]}
+              icon={createColoredIcon(PLACE_TYPE_COLORS[place.type])}
             >
-              <div
-                className="w-3 h-3 rounded-full border-2 border-white shadow"
-                style={{ backgroundColor: PLACE_TYPE_COLORS[place.type] }}
-              />
-            </AdvancedMarker>
+              <Popup>
+                <div className="max-w-[220px]">
+                  <div className="flex items-center gap-1 mb-1">
+                    <span
+                      className="w-2 h-2 rounded-full inline-block"
+                      style={{
+                        backgroundColor: PLACE_TYPE_COLORS[place.type],
+                      }}
+                    />
+                    <span className="text-xs text-gray-500">
+                      {PLACE_TYPE_LABELS[place.type]}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-sm">{place.nameTh}</h3>
+                  <p className="text-xs text-gray-500">{place.name}</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {place.description}
+                  </p>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-gray-500">
+                      ห่างจากโรงแรม {place.distance}
+                    </span>
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&origin=${HOTEL_LOCATION.lat},${HOTEL_LOCATION.lng}&destination=${place.lat},${place.lng}&travelmode=walking`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 underline"
+                    >
+                      เส้นทาง
+                    </a>
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
           ))}
-
-        {selectedPlace && (
-          <InfoWindow
-            position={{ lat: selectedPlace.lat, lng: selectedPlace.lng }}
-            onCloseClick={() => setSelectedPlace(null)}
-          >
-            <div className="p-1 max-w-[220px]">
-              <div className="flex items-center gap-1 mb-1">
-                <span
-                  className="w-2 h-2 rounded-full inline-block"
-                  style={{
-                    backgroundColor: PLACE_TYPE_COLORS[selectedPlace.type],
-                  }}
-                />
-                <span className="text-xs text-gray-500">
-                  {PLACE_TYPE_LABELS[selectedPlace.type]}
-                </span>
-              </div>
-              <h3 className="font-bold text-sm">{selectedPlace.nameTh}</h3>
-              <p className="text-xs text-gray-500">{selectedPlace.name}</p>
-              <p className="text-xs text-gray-600 mt-1">
-                {selectedPlace.description}
-              </p>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-gray-500">
-                  ห่างจากโรงแรม {selectedPlace.distance}
-                </span>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&origin=${HOTEL_LOCATION.lat},${HOTEL_LOCATION.lng}&destination=${selectedPlace.lat},${selectedPlace.lng}&travelmode=walking`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-600 underline"
-                >
-                  เส้นทาง
-                </a>
-              </div>
-            </div>
-          </InfoWindow>
-        )}
-      </Map>
+      </MapContainer>
     </div>
   );
 }
