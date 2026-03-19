@@ -208,9 +208,9 @@ export default function AdminProductsPage() {
                               )}
                             </div>
                             <div>
-                              <p className="font-medium">{product.nameTh}</p>
+                              <p className="font-medium">{product.name}</p>
                               <p className="text-sm text-muted-foreground">
-                                {product.name}
+                                {product.nameTh}
                               </p>
                             </div>
                           </div>
