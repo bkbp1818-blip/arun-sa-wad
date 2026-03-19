@@ -124,7 +124,7 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">สินค้า/บริการ</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">สินค้า/บริการ</h1>
           <p className="text-muted-foreground">จัดการห้องพัก ทัวร์ และบริการต่างๆ</p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -134,7 +134,7 @@ export default function AdminProductsPage() {
               เพิ่มสินค้า
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>เพิ่มสินค้าใหม่</DialogTitle>
             </DialogHeader>
@@ -178,7 +178,8 @@ export default function AdminProductsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
@@ -194,7 +195,7 @@ export default function AdminProductsPage() {
                       <tr key={product.id} className="border-t">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden">
+                            <div className="h-12 w-12 rounded bg-muted flex items-center justify-center overflow-hidden shrink-0">
                               {product.images[0] ? (
                                 <img
                                   src={product.images[0]}
@@ -259,6 +260,59 @@ export default function AdminProductsPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Mobile Card List */}
+              <div className="sm:hidden divide-y">
+                {typeProducts.map((product) => (
+                  <div key={product.id} className="p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-14 w-14 rounded bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                        {product.images[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.nameTh}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">
+                            No img
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{product.name}</p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {product.nameTh}
+                        </p>
+                      </div>
+                      <Badge variant={product.isActive ? "default" : "secondary"} className="shrink-0">
+                        {product.isActive ? "เปิด" : "ปิด"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-primary">
+                        {Number(product.price).toLocaleString()} ฿
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Link href={`/admin/products/${product.id}`}>
+                          <Button variant="outline" size="sm" className="h-9">
+                            <Pencil className="h-3.5 w-3.5 mr-1" />
+                            แก้ไข
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-9 text-destructive border-destructive/30"
+                          onClick={() => handleDelete(product.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

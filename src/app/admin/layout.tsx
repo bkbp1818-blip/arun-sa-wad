@@ -29,7 +29,7 @@ export default async function AdminLayout({
 
       {/* Main Content */}
       <main className="flex-1 bg-muted/30">
-        <div className="p-6 lg:p-8">{children}</div>
+        <div className="pt-16 px-4 pb-6 sm:p-6 lg:pt-8 lg:p-8">{children}</div>
       </main>
     </div>
   );

@@ -161,7 +161,7 @@ export default function AdminBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">การจอง</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">การจอง</h1>
         <p className="text-muted-foreground">จัดการและติดตามการจองทั้งหมด</p>
       </div>
 
@@ -191,8 +191,8 @@ export default function AdminBookingsPage() {
         </Select>
       </div>
 
-      {/* Bookings Table */}
-      <Card>
+      {/* Bookings Table - Desktop */}
+      <Card className="hidden sm:block">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -272,12 +272,63 @@ export default function AdminBookingsPage() {
         </CardContent>
       </Card>
 
+      {/* Bookings Cards - Mobile */}
+      <div className="sm:hidden space-y-3">
+        {filteredBookings.length === 0 ? (
+          <Card>
+            <CardContent className="py-8 text-center text-muted-foreground">
+              ไม่พบการจอง
+            </CardContent>
+          </Card>
+        ) : (
+          filteredBookings.map((booking) => (
+            <Card
+              key={booking.id}
+              className="cursor-pointer active:bg-muted/50"
+              onClick={() => setSelectedBooking(booking)}
+            >
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0">
+                    <p className="font-medium truncate">
+                      {booking.guestName || booking.user.name || "-"}
+                    </p>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {booking.bookingNumber.slice(0, 12)}...
+                    </p>
+                  </div>
+                  <span className="font-bold text-primary shrink-0 ml-2">
+                    {Number(booking.total).toLocaleString()} ฿
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(booking.createdAt).toLocaleDateString("th-TH")}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <Badge variant={statusColors[booking.status]} className="text-xs">
+                      {statusLabels[booking.status]}
+                    </Badge>
+                    <Badge
+                      variant={booking.paymentStatus === "PAID" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {paymentLabels[booking.paymentStatus]}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+
       {/* Booking Detail Dialog */}
       <Dialog
         open={!!selectedBooking}
         onOpenChange={() => setSelectedBooking(null)}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>รายละเอียดการจอง</DialogTitle>
           </DialogHeader>

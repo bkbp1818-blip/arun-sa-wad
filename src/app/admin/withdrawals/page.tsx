@@ -136,7 +136,7 @@ export default function AdminWithdrawalsPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold">จัดการการถอนเงิน</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">จัดการการถอนเงิน</h1>
         <p className="text-muted-foreground">อนุมัติหรือปฏิเสธคำขอถอนเงินจากตัวแทน</p>
       </div>
 
