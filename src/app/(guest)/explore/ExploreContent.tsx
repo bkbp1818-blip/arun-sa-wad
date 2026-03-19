@@ -10,6 +10,8 @@ import {
   Navigation,
   ImageIcon,
   Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -237,6 +239,108 @@ function PlaceCard({ place }: { place: DisplayPlace }) {
   );
 }
 
+function CarouselRow({
+  title,
+  color,
+  places,
+}: {
+  title: string;
+  color: string;
+  places: DisplayPlace[];
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener("scroll", checkScroll, { passive: true });
+      // Also check on resize
+      window.addEventListener("resize", checkScroll);
+      return () => {
+        el.removeEventListener("scroll", checkScroll);
+        window.removeEventListener("resize", checkScroll);
+      };
+    }
+  }, [checkScroll, places]);
+
+  const scroll = (direction: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth = 280 + 16; // card width + gap
+    el.scrollBy({
+      left: direction === "left" ? -cardWidth * 2 : cardWidth * 2,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <div className="space-y-3">
+      {/* Section Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <h2 className="font-semibold text-lg">{title}</h2>
+          <span className="text-sm text-muted-foreground">
+            ({places.length})
+          </span>
+        </div>
+        {/* Desktop scroll buttons */}
+        <div className="hidden sm:flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => scroll("left")}
+            disabled={!canScrollLeft}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => scroll("right")}
+            disabled={!canScrollRight}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Horizontal Scroll */}
+      <div className="relative -mx-4 px-4">
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {places.map((place) => (
+            <div
+              key={place.id}
+              className="snap-start shrink-0 w-[280px] sm:w-[300px]"
+            >
+              <PlaceCard place={place} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ExploreContent() {
   const [filter, setFilter] = useState<FilterType>("all");
   const [places, setPlaces] = useState<DisplayPlace[]>([]);
@@ -340,13 +444,30 @@ export function ExploreContent() {
         </TabsList>
       </Tabs>
 
-      {/* Cards Grid */}
+      {/* Cards Carousel by Category */}
       {filteredPlaces.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredPlaces.map((place) => (
-            <PlaceCard key={place.id} place={place} />
-          ))}
-        </div>
+        filter === "all" ? (
+          // Show grouped by type
+          FILTER_OPTIONS.filter((o) => o.value !== "all").map((opt) => {
+            const typePlaces = places.filter((p) => p.type === opt.value);
+            if (typePlaces.length === 0) return null;
+            return (
+              <CarouselRow
+                key={opt.value}
+                title={opt.label}
+                color={TYPE_COLORS[opt.value] || "#888"}
+                places={typePlaces}
+              />
+            );
+          })
+        ) : (
+          // Show single category
+          <CarouselRow
+            title={TYPE_LABELS[filter] || filter}
+            color={TYPE_COLORS[filter] || "#888"}
+            places={filteredPlaces}
+          />
+        )
       ) : (
         <div className="text-center py-12">
           <p className="text-muted-foreground">ไม่พบสถานที่ในหมวดนี้</p>
