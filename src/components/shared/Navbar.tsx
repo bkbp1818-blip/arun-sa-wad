@@ -19,6 +19,7 @@ const navLinks = [
   { href: "/rooms", label: "ห้องพัก" },
   { href: "/tours", label: "ทัวร์" },
   { href: "/services", label: "บริการเสริม" },
+  { href: "/explore", label: "สำรวจ" },
   { href: "/location", label: "แผนที่" },
 ];
 
