@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Loader2, Search, FolderOpen } from "lucide-react";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { Product } from "@prisma/client";
 
 interface Category {
@@ -284,6 +285,7 @@ function ProductForm({
   categories: Category[];
 }) {
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     nameTh: "",
@@ -311,6 +313,7 @@ function ProductForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          images,
           price: parseFloat(formData.price),
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           amenities: formData.amenities
@@ -407,6 +410,8 @@ function ProductForm({
           </SelectContent>
         </Select>
       </div>
+
+      <ImageUpload images={images} onChange={setImages} />
 
       <div>
         <label className="text-sm font-medium mb-2 block">รายละเอียด (TH)</label>

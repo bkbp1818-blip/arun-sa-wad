@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { Product } from "@prisma/client";
 
 interface Category {
@@ -34,6 +35,7 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     nameTh: "",
@@ -62,6 +64,7 @@ export default function EditProductPage() {
       const res = await fetch(`/api/admin/products/${params.id}`);
       if (res.ok) {
         const product: ProductWithCategory = await res.json();
+        setImages(product.images || []);
         setFormData({
           name: product.name,
           nameTh: product.nameTh,
@@ -113,6 +116,7 @@ export default function EditProductPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          images,
           price: parseFloat(formData.price),
           capacity: formData.capacity ? parseInt(formData.capacity) : null,
           amenities: formData.amenities
@@ -246,6 +250,8 @@ export default function EditProductPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            <ImageUpload images={images} onChange={setImages} />
 
             <div>
               <label className="text-sm font-medium mb-2 block">
