@@ -126,9 +126,33 @@
 | Horizontal Carousel Layout | Done | LINE-style swipe cards grouped by category |
 | Seed Script | Done | `scripts/seed-explore-places.ts` (21 places) |
 
+### Phase 8: v1.5.0 - i18n & Auto-translate - COMPLETED
+
+| Task | Status | Files |
+|------|--------|-------|
+| Multi-language Support (TH/EN/ZH) | Done | i18n system across guest pages |
+| Translation API (Claude) | Done | `src/app/api/admin/translate/route.ts` |
+| useAutoTranslate Hook | Done | `src/hooks/useAutoTranslate.ts` |
+| Product Form ZH Fields | Done | `src/app/admin/products/page.tsx`, `[id]/page.tsx` |
+| Category Form ZH Fields | Done | `src/app/admin/categories/page.tsx` |
+| Explore Form ZH Fields | Done | `src/app/admin/explore/page.tsx` |
+| API Routes ZH Support | Done | All admin product/category/explore API routes |
+
 ---
 
 ## Recent Updates
+
+### v1.5.0 (March 2026)
+
+#### New Features
+| Feature | Description |
+|---------|-------------|
+| Auto-translate Chinese | Admin กรอกชื่อ TH/EN → ระบบแปลเป็นจีนอัตโนมัติ (debounce 1 วิ) |
+| Translation API | `/api/admin/translate` ใช้ Claude Haiku แปลข้อความ (ADMIN only) |
+| useAutoTranslate Hook | React hook สำหรับ auto-translate พร้อม debounce + manual trigger |
+| ZH Fields in All Forms | เพิ่มช่อง nameZh/descZh ใน Product, Category, Explore Place forms |
+| Manual Re-translate | ปุ่ม "แปล/แปลใหม่" สำหรับ trigger แปลด้วยมือ |
+| Edit Mode Smart Translate | หน้า Edit แปลเฉพาะเมื่อช่อง ZH ยังว่าง (ไม่ overwrite ค่าเดิม) |
 
 ### v1.4.0 (March 2026)
 
@@ -223,6 +247,7 @@
 | PUT/DELETE | `/api/admin/categories/[id]` | Done | Category CRUD |
 | GET/POST | `/api/admin/explore-places` | Done | Explore Place CRUD |
 | GET/PUT/DELETE | `/api/admin/explore-places/[id]` | Done | Explore Place CRUD |
+| POST | `/api/admin/translate` | Done | Auto-translate (Claude Haiku) |
 
 ---
 
@@ -297,6 +322,7 @@ src/
 │           ├── bookings/
 │           ├── categories/            # Admin category CRUD
 │           ├── explore-places/       # Admin explore CRUD
+│           ├── translate/route.ts   # Auto-translate API (Claude)
 │           ├── coupons/
 │           ├── affiliates/route.ts
 │           └── withdrawals/
@@ -323,7 +349,8 @@ src/
 │       └── ImageGallery.tsx           # Gallery with thumbnails (tour/room detail)
 ├── hooks/
 │   ├── useCart.ts                      # Zustand store
-│   └── useChat.ts                     # Chat state management
+│   ├── useChat.ts                     # Chat state management
+│   └── useAutoTranslate.ts           # Auto-translate hook (debounce + API call)
 ├── lib/
 │   ├── prisma.ts
 │   ├── auth.ts                         # Conditional OAuth providers
@@ -419,9 +446,10 @@ Edge Cases:       ██████████░░ 85%
 |------|--------|-------|
 | Facebook Login | Not Started | Low priority for Thai users |
 | Stripe Integration | Not Started | PromptPay is sufficient |
-| Multi-language | Not Started | Currently Thai only |
+| Multi-language | Done | TH/EN/ZH support + auto-translate Chinese in admin |
 | Room Filter/Search | Not Started | Currently no search in /rooms |
 | External Image Storage | Not Started | ปัจจุบันใช้ base64 (อาจช้าถ้ารูปเยอะ) |
+| Explore Images Re-host | In Progress | Wikimedia rate-limits thumbnails (HTTP 429) — ต้อง re-host รูปไปที่ Cloudinary/imgBB |
 
 ---
 
@@ -482,6 +510,24 @@ Edge Cases:       ██████████░░ 85%
 | 1.2.0 | Mar 2026 | AI Chat, Maps, Categories, Image Upload, Product Edit |
 | 1.3.0 | Mar 2026 | Image Gallery, Cover Photo, Mobile Responsive |
 | 1.4.0 | Mar 2026 | Explore Yaowarat, Admin CRUD, Carousel Layout |
+| 1.4.1 | Mar 2026 | Fix Wikimedia image URLs, pending re-host to external CDN |
+| 1.5.0 | Mar 2026 | i18n (TH/EN/ZH), Auto-translate Chinese in admin forms |
+
+### v1.5.0 Changes (March 20, 2026)
+- Added Translation API (`/api/admin/translate`) using Claude Haiku for auto-translation
+- Added `useAutoTranslate` hook with 1-second debounce + manual trigger button
+- Added nameZh/descZh fields to Product create & edit forms (3-column layout)
+- Added nameZh field to Category form with auto-translate
+- Added nameZh/descZh fields to Explore Place form with auto-translate
+- Updated all admin API routes (products, categories, explore-places) to save Chinese fields
+- Edit forms load existing ZH values from DB; auto-translate only when ZH fields are empty
+- Spinner indicator while translating + "แปล/แปลใหม่" manual re-translate button
+
+### v1.4.1 Changes (March 20, 2026)
+- Fixed Wikimedia thumbnail URLs: 800px → 960px (103 URLs × 2 files)
+- Added `next.config.ts` remotePatterns for `upload.wikimedia.org`
+- Reverted Next.js `<Image>` back to `<img>` — Wikimedia blocks Vercel's image proxy
+- **Known Issue:** Wikimedia rate-limits ALL thumbnail sizes (HTTP 429) — images need re-hosting to Cloudinary/imgBB
 
 ### v1.4.0 Changes
 - Added Explore Yaowarat page (`/explore`) with 21 places + 3 festivals
@@ -531,4 +577,4 @@ Edge Cases:       ██████████░░ 85%
 
 ---
 
-*Last Updated: March 19, 2026 (v1.4.0)*
+*Last Updated: March 20, 2026 (v1.5.0)*
