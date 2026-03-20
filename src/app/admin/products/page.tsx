@@ -20,9 +20,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Loader2, Search, FolderOpen } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Search, FolderOpen, Languages } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { Product } from "@prisma/client";
+import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 
 interface Category {
   id: string;
@@ -343,8 +344,10 @@ function ProductForm({
   const [formData, setFormData] = useState({
     name: "",
     nameTh: "",
+    nameZh: "",
     description: "",
     descTh: "",
+    descZh: "",
     type: "ROOM",
     price: "",
     roomNumber: "",
@@ -356,6 +359,23 @@ function ProductForm({
     availableFrom: "",
     availableTo: "",
   });
+
+  const { translations, isTranslating, triggerTranslate } = useAutoTranslate({
+    sourceFields: [
+      { field: "nameZh", sourceText: formData.nameTh || formData.name },
+      { field: "descZh", sourceText: formData.descTh || formData.description },
+    ],
+  });
+
+  // Auto-fill Chinese fields from translations
+  useEffect(() => {
+    if (translations.nameZh && !formData.nameZh) {
+      setFormData((prev) => ({ ...prev, nameZh: translations.nameZh }));
+    }
+    if (translations.descZh && !formData.descZh) {
+      setFormData((prev) => ({ ...prev, descZh: translations.descZh }));
+    }
+  }, [translations]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -394,7 +414,7 @@ function ProductForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="text-sm font-medium mb-2 block">ชื่อ (EN)</label>
           <Input
@@ -409,6 +429,25 @@ function ProductForm({
             value={formData.nameTh}
             onChange={(e) => setFormData({ ...formData, nameTh: e.target.value })}
             required
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+            ชื่อ (ZH)
+            {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+            <button
+              type="button"
+              onClick={triggerTranslate}
+              className="ml-auto text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+            >
+              <Languages className="h-3 w-3" />
+              แปล
+            </button>
+          </label>
+          <Input
+            value={formData.nameZh}
+            onChange={(e) => setFormData({ ...formData, nameZh: e.target.value })}
+            placeholder="自动翻译..."
           />
         </div>
       </div>
@@ -467,12 +506,25 @@ function ProductForm({
 
       <ImageUpload images={images} onChange={setImages} />
 
-      <div>
-        <label className="text-sm font-medium mb-2 block">รายละเอียด (TH)</label>
-        <Input
-          value={formData.descTh}
-          onChange={(e) => setFormData({ ...formData, descTh: e.target.value })}
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-sm font-medium mb-2 block">รายละเอียด (TH)</label>
+          <Input
+            value={formData.descTh}
+            onChange={(e) => setFormData({ ...formData, descTh: e.target.value })}
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+            รายละเอียด (ZH)
+            {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+          </label>
+          <Input
+            value={formData.descZh}
+            onChange={(e) => setFormData({ ...formData, descZh: e.target.value })}
+            placeholder="自动翻译..."
+          />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

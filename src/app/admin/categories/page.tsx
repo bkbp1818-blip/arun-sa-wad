@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Loader2, FolderOpen, Trash2, Pencil } from "lucide-react";
+import { Plus, Loader2, FolderOpen, Trash2, Pencil, Languages } from "lucide-react";
+import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 
 interface Category {
   id: string;
@@ -262,8 +263,22 @@ function CategoryForm({
   const [formData, setFormData] = useState({
     name: category?.name || "",
     nameTh: category?.nameTh || "",
+    nameZh: (category as unknown as Record<string, unknown>)?.nameZh as string || "",
     isActive: category?.isActive ?? true,
   });
+
+  const { translations, isTranslating, triggerTranslate } = useAutoTranslate({
+    sourceFields: [
+      { field: "nameZh", sourceText: formData.nameTh || formData.name },
+    ],
+    enabled: !formData.nameZh,
+  });
+
+  useEffect(() => {
+    if (translations.nameZh && !formData.nameZh) {
+      setFormData((prev) => ({ ...prev, nameZh: translations.nameZh }));
+    }
+  }, [translations]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -314,6 +329,29 @@ function CategoryForm({
           onChange={(e) => setFormData({ ...formData, nameTh: e.target.value })}
           placeholder="ยอดนิยม"
           required
+        />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+          ชื่อ (ภาษาจีน)
+          {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+          <button
+            type="button"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, nameZh: "" }));
+              triggerTranslate();
+            }}
+            className="ml-auto text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+          >
+            <Languages className="h-3 w-3" />
+            แปล
+          </button>
+        </label>
+        <Input
+          value={formData.nameZh}
+          onChange={(e) => setFormData({ ...formData, nameZh: e.target.value })}
+          placeholder="自动翻译..."
         />
       </div>
 

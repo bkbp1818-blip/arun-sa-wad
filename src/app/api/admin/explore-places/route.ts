@@ -37,8 +37,10 @@ export async function POST(request: Request) {
     const {
       name,
       nameTh,
+      nameZh,
       type,
       description,
+      descZh,
       latitude,
       longitude,
       distance,
@@ -54,8 +56,10 @@ export async function POST(request: Request) {
       data: {
         name,
         nameTh,
+        nameZh: nameZh || null,
         type: type as ExplorePlaceType,
         description,
+        descZh: descZh || null,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         distance,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +19,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2, Loader2, Search, MapPin } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Search, MapPin, Languages } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { ExplorePlace, ExplorePlaceType } from "@prisma/client";
+import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 
 const typeLabels: Record<string, string> = {
   TEMPLE: "วัด",
@@ -355,8 +356,10 @@ function PlaceForm({
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     nameTh: initialData?.nameTh || "",
+    nameZh: (initialData as unknown as Record<string, unknown>)?.nameZh as string || "",
     type: initialData?.type || "TEMPLE",
     description: initialData?.description || "",
+    descZh: (initialData as unknown as Record<string, unknown>)?.descZh as string || "",
     latitude: initialData?.latitude?.toString() || "13.7407",
     longitude: initialData?.longitude?.toString() || "100.5086",
     distance: initialData?.distance || "",
@@ -367,6 +370,23 @@ function PlaceForm({
     highlights: initialData?.highlights?.join(", ") || "",
     isActive: initialData?.isActive ?? true,
   });
+
+  const { translations, isTranslating, triggerTranslate } = useAutoTranslate({
+    sourceFields: [
+      { field: "nameZh", sourceText: formData.nameTh || formData.name },
+      { field: "descZh", sourceText: formData.description },
+    ],
+    enabled: !formData.nameZh && !formData.descZh,
+  });
+
+  useEffect(() => {
+    if (translations.nameZh && !formData.nameZh) {
+      setFormData((prev) => ({ ...prev, nameZh: translations.nameZh }));
+    }
+    if (translations.descZh && !formData.descZh) {
+      setFormData((prev) => ({ ...prev, descZh: translations.descZh }));
+    }
+  }, [translations]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -404,7 +424,7 @@ function PlaceForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="text-sm font-medium mb-2 block">ชื่อ (EN) *</label>
           <Input
@@ -423,6 +443,30 @@ function PlaceForm({
             }
             placeholder="วัดมังกรกมลาวาส"
             required
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+            ชื่อ (ZH)
+            {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, nameZh: "", descZh: "" }));
+                triggerTranslate();
+              }}
+              className="ml-auto text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+            >
+              <Languages className="h-3 w-3" />
+              แปล
+            </button>
+          </label>
+          <Input
+            value={formData.nameZh}
+            onChange={(e) =>
+              setFormData({ ...formData, nameZh: e.target.value })
+            }
+            placeholder="自动翻译..."
           />
         </div>
       </div>
@@ -462,16 +506,31 @@ function PlaceForm({
         </div>
       </div>
 
-      <div>
-        <label className="text-sm font-medium mb-2 block">รายละเอียด *</label>
-        <Input
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
-          placeholder="คำอธิบายสถานที่..."
-          required
-        />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="text-sm font-medium mb-2 block">รายละเอียด *</label>
+          <Input
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            placeholder="คำอธิบายสถานที่..."
+            required
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+            รายละเอียด (ZH)
+            {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+          </label>
+          <Input
+            value={formData.descZh}
+            onChange={(e) =>
+              setFormData({ ...formData, descZh: e.target.value })
+            }
+            placeholder="自动翻译..."
+          />
+        </div>
       </div>
 
       <ImageUpload images={images} onChange={setImages} />

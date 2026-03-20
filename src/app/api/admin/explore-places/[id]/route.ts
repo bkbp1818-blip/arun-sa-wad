@@ -51,8 +51,10 @@ export async function PUT(
     const {
       name,
       nameTh,
+      nameZh,
       type,
       description,
+      descZh,
       latitude,
       longitude,
       distance,
@@ -70,8 +72,10 @@ export async function PUT(
       data: {
         name,
         nameTh,
+        nameZh: nameZh || null,
         type: type as ExplorePlaceType,
         description,
+        descZh: descZh || null,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         distance,

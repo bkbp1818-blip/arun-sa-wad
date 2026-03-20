@@ -52,13 +52,14 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, nameTh, isActive, sortOrder } = body;
+    const { name, nameTh, nameZh, isActive, sortOrder } = body;
 
     const category = await prisma.category.update({
       where: { id },
       data: {
         ...(name && { name }),
         ...(nameTh && { nameTh }),
+        ...(nameZh !== undefined && { nameZh: nameZh || null }),
         ...(typeof isActive === "boolean" && { isActive }),
         ...(typeof sortOrder === "number" && { sortOrder }),
       },

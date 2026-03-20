@@ -13,9 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Languages } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { Product } from "@prisma/client";
+import { useAutoTranslate } from "@/hooks/useAutoTranslate";
 
 interface Category {
   id: string;
@@ -39,8 +40,10 @@ export default function EditProductPage() {
   const [formData, setFormData] = useState({
     name: "",
     nameTh: "",
+    nameZh: "",
     description: "",
     descTh: "",
+    descZh: "",
     type: "ROOM",
     price: "",
     isActive: true,
@@ -53,6 +56,25 @@ export default function EditProductPage() {
     availableFrom: "",
     availableTo: "",
   });
+
+  // Auto-translate: only trigger when ZH fields are empty
+  const { translations, isTranslating, triggerTranslate } = useAutoTranslate({
+    sourceFields: [
+      { field: "nameZh", sourceText: formData.nameTh || formData.name },
+      { field: "descZh", sourceText: formData.descTh || formData.description },
+    ],
+    enabled: !formData.nameZh && !formData.descZh,
+  });
+
+  // Auto-fill Chinese fields from translations
+  useEffect(() => {
+    if (translations.nameZh && !formData.nameZh) {
+      setFormData((prev) => ({ ...prev, nameZh: translations.nameZh }));
+    }
+    if (translations.descZh && !formData.descZh) {
+      setFormData((prev) => ({ ...prev, descZh: translations.descZh }));
+    }
+  }, [translations]);
 
   useEffect(() => {
     fetchProduct();
@@ -68,8 +90,10 @@ export default function EditProductPage() {
         setFormData({
           name: product.name,
           nameTh: product.nameTh,
+          nameZh: (product as unknown as Record<string, unknown>).nameZh as string || "",
           description: product.description || "",
           descTh: product.descTh || "",
+          descZh: (product as unknown as Record<string, unknown>).descZh as string || "",
           type: product.type,
           price: String(product.price),
           isActive: product.isActive,
@@ -169,7 +193,7 @@ export default function EditProductPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <label className="text-sm font-medium mb-2 block">ชื่อ (EN)</label>
                 <Input
@@ -188,6 +212,30 @@ export default function EditProductPage() {
                     setFormData({ ...formData, nameTh: e.target.value })
                   }
                   required
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+                  ชื่อ (ZH)
+                  {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({ ...prev, nameZh: "", descZh: "" }));
+                      triggerTranslate();
+                    }}
+                    className="ml-auto text-xs text-blue-500 hover:text-blue-700 flex items-center gap-1"
+                  >
+                    <Languages className="h-3 w-3" />
+                    แปลใหม่
+                  </button>
+                </label>
+                <Input
+                  value={formData.nameZh}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nameZh: e.target.value })
+                  }
+                  placeholder="自动翻译..."
                 />
               </div>
             </div>
@@ -253,16 +301,31 @@ export default function EditProductPage() {
 
             <ImageUpload images={images} onChange={setImages} />
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">
-                รายละเอียด (TH)
-              </label>
-              <Input
-                value={formData.descTh}
-                onChange={(e) =>
-                  setFormData({ ...formData, descTh: e.target.value })
-                }
-              />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  รายละเอียด (TH)
+                </label>
+                <Input
+                  value={formData.descTh}
+                  onChange={(e) =>
+                    setFormData({ ...formData, descTh: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block flex items-center gap-1">
+                  รายละเอียด (ZH)
+                  {isTranslating && <Loader2 className="h-3 w-3 animate-spin" />}
+                </label>
+                <Input
+                  value={formData.descZh}
+                  onChange={(e) =>
+                    setFormData({ ...formData, descZh: e.target.value })
+                  }
+                  placeholder="自动翻译..."
+                />
+              </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

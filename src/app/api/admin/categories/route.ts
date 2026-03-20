@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { name, nameTh } = body;
+    const { name, nameTh, nameZh } = body;
 
     const slug = generateSlug(name);
 
@@ -66,6 +66,7 @@ export async function POST(request: Request) {
       data: {
         name,
         nameTh,
+        nameZh: nameZh || null,
         slug,
         sortOrder: (maxSort?.sortOrder ?? 0) + 1,
       },
