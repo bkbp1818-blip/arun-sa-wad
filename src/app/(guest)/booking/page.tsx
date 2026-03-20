@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useCart } from "@/hooks/useCart";
 import { useAffiliate } from "@/hooks/useAffiliate";
+import { useTranslation, getLocalizedName } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ function BookingContent() {
   const { data: session, status } = useSession();
   const { items, addItem, removeItem, updateQuantity, getTotal, clearCart } = useCart();
   const { affiliateId } = useAffiliate();
+  const { t, locale } = useTranslation();
 
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +41,6 @@ function BookingContent() {
       const productId = roomId || tourId || serviceId;
       if (!productId) return;
 
-      // Check if already in cart
       if (items.some((item) => item.productId === productId)) return;
 
       setLoading(true);
@@ -83,7 +84,7 @@ function BookingContent() {
     }
 
     if (items.length === 0) {
-      alert("กรุณาเลือกสินค้าหรือบริการก่อน");
+      alert(t("booking.selectFirst"));
       return;
     }
 
@@ -112,18 +113,21 @@ function BookingContent() {
       if (res.ok) {
         const booking = await res.json();
         clearCart();
-        // Redirect to payment page
         router.push(`/payment/${booking.id}`);
       } else {
         const error = await res.json();
-        alert(error.message || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+        alert(error.message || t("booking.error"));
       }
     } catch (error) {
       console.error("Booking failed:", error);
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      alert(t("booking.error"));
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const getItemDisplayName = (item: { name: string; nameTh: string; nameZh?: string }) => {
+    return getLocalizedName(locale, item);
   };
 
   const hasRoomInCart = items.some((item) => item.type === "ROOM");
@@ -146,21 +150,21 @@ function BookingContent() {
         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-6"
       >
         <ArrowLeft className="h-4 w-4 mr-1" />
-        กลับหน้าหลัก
+        {t("booking.backHome")}
       </Link>
 
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">ยืนยันการจอง</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">{t("booking.title")}</h1>
 
       {items.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">ตะกร้าว่างเปล่า</h3>
+            <h3 className="text-lg font-medium mb-2">{t("booking.emptyCart")}</h3>
             <p className="text-muted-foreground mb-4">
-              เลือกห้องพัก ทัวร์ หรือบริการเพื่อเริ่มต้น
+              {t("booking.emptyCartDesc")}
             </p>
             <Button asChild>
-              <Link href="/rooms">ดูห้องพัก</Link>
+              <Link href="/rooms">{t("booking.viewRooms")}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -171,7 +175,7 @@ function BookingContent() {
             <div className="lg:col-span-2 space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>รายการที่เลือก</CardTitle>
+                  <CardTitle>{t("booking.selectedItems")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {items.map((item) => (
@@ -182,10 +186,10 @@ function BookingContent() {
                       {/* Row 1: Name + Remove */}
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium">{item.nameTh}</h4>
+                          <h4 className="font-medium">{getItemDisplayName(item)}</h4>
                           <p className="text-sm text-muted-foreground">
-                            {item.price.toLocaleString()} ฿
-                            {item.type === "ROOM" ? "/คืน" : item.type === "TOUR" ? "/คน" : ""}
+                            {item.price.toLocaleString()} {t("common.baht")}
+                            {item.type === "ROOM" ? t("common.perNight") : item.type === "TOUR" ? t("common.perPerson") : ""}
                           </p>
                         </div>
                         <Button
@@ -225,7 +229,7 @@ function BookingContent() {
                           </Button>
                         </div>
                         <div className="font-semibold text-primary">
-                          {(item.price * item.quantity).toLocaleString()} ฿
+                          {(item.price * item.quantity).toLocaleString()} {t("common.baht")}
                         </div>
                       </div>
                     </div>
@@ -237,12 +241,12 @@ function BookingContent() {
               {hasRoomInCart && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>วันที่เข้าพัก</CardTitle>
+                    <CardTitle>{t("booking.stayDates")}</CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <label className="text-sm font-medium mb-2 block">
-                        เช็คอิน
+                        {t("booking.checkIn")}
                       </label>
                       <Input
                         type="date"
@@ -254,7 +258,7 @@ function BookingContent() {
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">
-                        เช็คเอาท์
+                        {t("booking.checkOut")}
                       </label>
                       <Input
                         type="date"
@@ -271,21 +275,21 @@ function BookingContent() {
               {/* Guest Info */}
               <Card>
                 <CardHeader>
-                  <CardTitle>ข้อมูลผู้จอง</CardTitle>
+                  <CardTitle>{t("booking.guestInfo")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">ชื่อ-นามสกุล</label>
+                    <label className="text-sm font-medium mb-2 block">{t("booking.fullName")}</label>
                     <Input
                       value={guestName}
                       onChange={(e) => setGuestName(e.target.value)}
-                      placeholder="ชื่อ-นามสกุล"
+                      placeholder={t("booking.fullName")}
                       required
                     />
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">อีเมล</label>
+                      <label className="text-sm font-medium mb-2 block">{t("booking.email")}</label>
                       <Input
                         type="email"
                         value={guestEmail}
@@ -295,7 +299,7 @@ function BookingContent() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">เบอร์โทร</label>
+                      <label className="text-sm font-medium mb-2 block">{t("booking.phone")}</label>
                       <Input
                         type="tel"
                         value={guestPhone}
@@ -306,12 +310,12 @@ function BookingContent() {
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      คำขอพิเศษ (ถ้ามี)
+                      {t("booking.specialRequests")}
                     </label>
                     <Input
                       value={specialRequests}
                       onChange={(e) => setSpecialRequests(e.target.value)}
-                      placeholder="เช่น เตียงเสริม, ห้องชั้นล่าง"
+                      placeholder={t("booking.specialRequestsPlaceholder")}
                     />
                   </div>
                 </CardContent>
@@ -322,16 +326,16 @@ function BookingContent() {
             <div>
               <Card className="sticky top-24">
                 <CardHeader>
-                  <CardTitle>สรุปการจอง</CardTitle>
+                  <CardTitle>{t("booking.summary")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     {items.map((item) => (
                       <div key={item.productId} className="flex justify-between text-sm">
                         <span>
-                          {item.nameTh} x{item.quantity}
+                          {getItemDisplayName(item)} x{item.quantity}
                         </span>
-                        <span>{(item.price * item.quantity).toLocaleString()} ฿</span>
+                        <span>{(item.price * item.quantity).toLocaleString()} {t("common.baht")}</span>
                       </div>
                     ))}
                   </div>
@@ -339,29 +343,29 @@ function BookingContent() {
                   <Separator />
 
                   <div className="flex justify-between font-bold text-lg">
-                    <span>รวมทั้งหมด</span>
-                    <span className="text-primary">{getTotal().toLocaleString()} ฿</span>
+                    <span>{t("booking.total")}</span>
+                    <span className="text-primary">{getTotal().toLocaleString()} {t("common.baht")}</span>
                   </div>
 
                   {!session ? (
                     <Button asChild className="w-full">
-                      <Link href="/login">เข้าสู่ระบบเพื่อจอง</Link>
+                      <Link href="/login">{t("booking.loginToBook")}</Link>
                     </Button>
                   ) : (
                     <Button type="submit" className="w-full" disabled={submitting}>
                       {submitting ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          กำลังดำเนินการ...
+                          {t("booking.processing")}
                         </>
                       ) : (
-                        "ดำเนินการชำระเงิน"
+                        t("booking.proceedPayment")
                       )}
                     </Button>
                   )}
 
                   <p className="text-xs text-muted-foreground text-center">
-                    การจองจะถูกยืนยันหลังจากการชำระเงิน
+                    {t("booking.confirmNote")}
                   </p>
                 </CardContent>
               </Card>

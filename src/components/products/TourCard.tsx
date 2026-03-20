@@ -7,13 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, ImageIcon } from "lucide-react";
 import type { Product } from "@prisma/client";
+import { useTranslation, getLocalizedName, getLocalizedDesc } from "@/lib/i18n";
 
 interface TourCardProps {
-  tour: Product;
+  tour: Product & { nameZh?: string | null; descZh?: string | null };
 }
 
 export function TourCard({ tour }: TourCardProps) {
   const price = Number(tour.price);
+  const { t, locale } = useTranslation();
+  const name = getLocalizedName(locale, tour);
+  const desc = getLocalizedDesc(locale, tour);
   const [currentIndex, setCurrentIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hasMultipleImages = tour.images.length > 1;
@@ -44,12 +48,12 @@ export function TourCard({ tour }: TourCardProps) {
         {tour.images[0] ? (
           <img
             src={tour.images[currentIndex] || tour.images[0]}
-            alt={tour.nameTh}
+            alt={name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-            No Image
+            {t("common.noImage")}
           </div>
         )}
         {tour.duration && (
@@ -61,7 +65,7 @@ export function TourCard({ tour }: TourCardProps) {
           <>
             <Badge className="absolute bottom-2 right-2 bg-black/60 hover:bg-black/60 text-white border-0 flex items-center gap-1">
               <ImageIcon className="h-3 w-3" />
-              {tour.images.length} รูป
+              {tour.images.length} {t("tours.photos")}
             </Badge>
             {/* Dot indicators */}
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
@@ -82,10 +86,15 @@ export function TourCard({ tour }: TourCardProps) {
 
       {/* Content */}
       <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-0.5">{tour.name}</h3>
-        <p className="text-sm text-muted-foreground mb-2">{tour.nameTh}</p>
+        <h3 className="font-semibold text-lg mb-0.5">{name}</h3>
+        {locale === "th" && tour.name !== tour.nameTh && (
+          <p className="text-sm text-muted-foreground mb-2">{tour.name}</p>
+        )}
+        {locale !== "th" && tour.nameTh && (
+          <p className="text-sm text-muted-foreground mb-2">{tour.nameTh}</p>
+        )}
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-          {tour.descTh || tour.description}
+          {desc}
         </p>
 
         {/* Features */}
@@ -111,10 +120,10 @@ export function TourCard({ tour }: TourCardProps) {
           <span className="text-xl sm:text-2xl font-bold text-primary">
             {price.toLocaleString()}
           </span>
-          <span className="text-sm text-muted-foreground"> ฿/คน</span>
+          <span className="text-sm text-muted-foreground"> {t("tours.perPerson")}</span>
         </div>
         <Button asChild className="w-full sm:w-auto h-11">
-          <Link href={`/tours/${tour.id}`}>ดูรายละเอียด</Link>
+          <Link href={`/tours/${tour.id}`}>{t("tours.viewDetails")}</Link>
         </Button>
       </CardFooter>
     </Card>

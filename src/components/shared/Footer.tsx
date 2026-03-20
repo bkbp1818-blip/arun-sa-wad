@@ -1,38 +1,41 @@
+"use client";
+
 import Link from "next/link";
 import { MapPin, Phone, Mail } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t bg-muted/40">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-primary">ARUN SA WAD</h3>
-            <p className="text-sm text-muted-foreground">
-              โรงแรมบูติคใจกลางเยาวราช
-              <br />
-              สัมผัสประสบการณ์ Chinatown แท้ๆ
+            <h3 className="text-lg font-bold text-primary">{t("footer.brand")}</h3>
+            <p className="text-sm text-muted-foreground whitespace-pre-line">
+              {t("footer.tagline")}
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="font-semibold">เมนูลัด</h4>
+            <h4 className="font-semibold">{t("footer.quickLinks")}</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link href="/rooms" className="hover:text-primary transition-colors">
-                  ห้องพัก
+                  {t("footer.rooms")}
                 </Link>
               </li>
               <li>
                 <Link href="/tours" className="hover:text-primary transition-colors">
-                  ทัวร์เยาวราช
+                  {t("footer.tours")}
                 </Link>
               </li>
               <li>
                 <Link href="/services" className="hover:text-primary transition-colors">
-                  บริการเสริม
+                  {t("footer.services")}
                 </Link>
               </li>
             </ul>
@@ -40,11 +43,11 @@ export function Footer() {
 
           {/* Contact */}
           <div className="space-y-4">
-            <h4 className="font-semibold">ติดต่อเรา</h4>
+            <h4 className="font-semibold">{t("footer.contact")}</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                <span>ถนนเยาวราช กรุงเทพฯ</span>
+                <span>{t("footer.address")}</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
@@ -63,21 +66,21 @@ export function Footer() {
 
           {/* Social & Legal */}
           <div className="space-y-4">
-            <h4 className="font-semibold">ข้อมูลเพิ่มเติม</h4>
+            <h4 className="font-semibold">{t("footer.moreInfo")}</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <Link href="/about" className="hover:text-primary transition-colors">
-                  เกี่ยวกับเรา
+                  {t("footer.about")}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="hover:text-primary transition-colors">
-                  ข้อกำหนดการใช้งาน
+                  {t("footer.terms")}
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-primary transition-colors">
-                  นโยบายความเป็นส่วนตัว
+                  {t("footer.privacy")}
                 </Link>
               </li>
             </ul>
@@ -86,7 +89,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ARUN SA WAD. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {t("footer.copyright")}</p>
           <p className="mt-2 text-xs">Version 1.0.0 - Deployed via GitHub</p>
         </div>
       </div>

@@ -79,8 +79,10 @@ model Product {
   id          String      @id @default(cuid())
   name        String
   nameTh      String
+  nameZh      String?
   description String?     @db.Text
   descTh      String?     @db.Text
+  descZh      String?     @db.Text
   type        ProductType
   price       Decimal     @db.Decimal(10, 2)
   currency    String      @default("THB")
@@ -128,6 +130,7 @@ model Category {
   id          String    @id @default(cuid())
   name        String    // ชื่อภาษาอังกฤษ
   nameTh      String    // ชื่อภาษาไทย
+  nameZh      String?   // ชื่อภาษาจีน
   slug        String    @unique
   sortOrder   Int       @default(0)
   isActive    Boolean   @default(true)
@@ -274,8 +277,10 @@ model ExplorePlace {
   id            String            @id @default(cuid())
   name          String            // ชื่อภาษาอังกฤษ
   nameTh        String            // ชื่อภาษาไทย
+  nameZh        String?           // ชื่อภาษาจีน
   type          ExplorePlaceType
   description   String            @db.Text
+  descZh        String?           @db.Text
   latitude      Float
   longitude     Float
   distance      String            // e.g., "200 ม.", "2.5 กม."

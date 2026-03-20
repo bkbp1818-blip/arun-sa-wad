@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { RoomCard } from "@/components/products/RoomCard";
+import { RoomsContent } from "./RoomsContent";
 
 export const dynamic = "force-dynamic";
 
@@ -19,28 +19,5 @@ export default async function RoomsPage() {
     },
   });
 
-  return (
-    <div className="container mx-auto px-4 py-6 sm:py-8">
-      {/* Header */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">ห้องพัก</h1>
-        <p className="text-muted-foreground">
-          เลือกห้องพักที่เหมาะกับคุณ พร้อมสิ่งอำนวยความสะดวกครบครัน
-        </p>
-      </div>
-
-      {/* Room Grid */}
-      {rooms.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {rooms.map((room) => (
-            <RoomCard key={room.id} room={room} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">ไม่พบห้องพัก</p>
-        </div>
-      )}
-    </div>
-  );
+  return <RoomsContent rooms={rooms} />;
 }

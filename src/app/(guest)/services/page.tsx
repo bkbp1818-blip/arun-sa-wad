@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ServiceCard } from "@/components/products/ServiceCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "@/lib/i18n";
 import type { Product } from "@prisma/client";
 
 export default function ServicesPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [services, setServices] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +18,6 @@ export default function ServicesPage() {
       try {
         const res = await fetch("/api/products");
         const products = await res.json();
-        // Filter only FOOD, SERVICE, MERCH
         const filtered = products.filter((p: Product) =>
           ["FOOD", "SERVICE", "MERCH"].includes(p.type)
         );
@@ -31,7 +32,6 @@ export default function ServicesPage() {
   }, []);
 
   const handleAddToCart = (product: Product) => {
-    // For now, redirect to booking with the product
     router.push(`/booking?service=${product.id}`);
   };
 
@@ -43,7 +43,7 @@ export default function ServicesPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
-          <p className="text-muted-foreground">กำลังโหลด...</p>
+          <p className="text-muted-foreground">{t("common.loading")}</p>
         </div>
       </div>
     );
@@ -53,19 +53,19 @@ export default function ServicesPage() {
     <div className="container mx-auto px-4 py-6 sm:py-8">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2">บริการเสริม</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">{t("services.title")}</h1>
         <p className="text-muted-foreground">
-          เพิ่มความสะดวกให้ทริปเยาวราชของคุณด้วยบริการพิเศษ
+          {t("services.subtitle")}
         </p>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="mb-6 w-full flex overflow-x-auto">
-          <TabsTrigger value="all" className="flex-1 min-w-0">ทั้งหมด ({services.length})</TabsTrigger>
-          <TabsTrigger value="food" className="flex-1 min-w-0">อาหาร ({foodItems.length})</TabsTrigger>
-          <TabsTrigger value="service" className="flex-1 min-w-0">บริการ ({serviceItems.length})</TabsTrigger>
-          <TabsTrigger value="merch" className="flex-1 min-w-0">ของฝาก ({merchItems.length})</TabsTrigger>
+          <TabsTrigger value="all" className="flex-1 min-w-0">{t("services.all")} ({services.length})</TabsTrigger>
+          <TabsTrigger value="food" className="flex-1 min-w-0">{t("services.food")} ({foodItems.length})</TabsTrigger>
+          <TabsTrigger value="service" className="flex-1 min-w-0">{t("services.service")} ({serviceItems.length})</TabsTrigger>
+          <TabsTrigger value="merch" className="flex-1 min-w-0">{t("services.merch")} ({merchItems.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all">
@@ -81,7 +81,7 @@ export default function ServicesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">ไม่พบบริการ</p>
+              <p className="text-muted-foreground">{t("services.notFound")}</p>
             </div>
           )}
         </TabsContent>
@@ -99,7 +99,7 @@ export default function ServicesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">ไม่พบรายการอาหาร</p>
+              <p className="text-muted-foreground">{t("services.notFoundFood")}</p>
             </div>
           )}
         </TabsContent>
@@ -117,7 +117,7 @@ export default function ServicesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">ไม่พบบริการ</p>
+              <p className="text-muted-foreground">{t("services.notFound")}</p>
             </div>
           )}
         </TabsContent>
@@ -135,7 +135,7 @@ export default function ServicesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">ไม่พบของฝาก</p>
+              <p className="text-muted-foreground">{t("services.notFoundMerch")}</p>
             </div>
           )}
         </TabsContent>

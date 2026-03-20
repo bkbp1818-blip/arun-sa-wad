@@ -12,22 +12,24 @@ export interface HotelBranch {
   id: string;
   name: string;
   nameTh: string;
+  nameZh?: string;
   shortName: string;
   lat: number;
   lng: number;
 }
 
 export const HOTEL_BRANCHES: HotelBranch[] = [
-  { id: "chinatown", name: "ARUN SA WAD - CHINATOWN", nameTh: "ไชน่าทาวน์", shortName: "CHINATOWN", lat: 13.740065, lng: 100.5136482 },
-  { id: "yaowarat", name: "ARUN SA WAD - YAOWARAT", nameTh: "เยาวราช", shortName: "YAOWARAT", lat: 13.7435887, lng: 100.504873 },
-  { id: "nana", name: "ARUN SA WAD - 103 NANA", nameTh: "103 นานา", shortName: "103 NANA", lat: 13.7392403, lng: 100.5139454 },
-  { id: "ladphrao", name: "ARUN SA WAD - House Lad Phrao", nameTh: "บ้านลาดพร้าว", shortName: "House ลาดพร้าว", lat: 13.8092807, lng: 100.5732116 },
-  { id: "onnut", name: "ARUN SA WAD - House ON NUT", nameTh: "บ้านอ่อนนุช", shortName: "House อ่อนนุช", lat: 13.7056708, lng: 100.6059399 },
+  { id: "chinatown", name: "ARUN SA WAD - CHINATOWN", nameTh: "ไชน่าทาวน์", nameZh: "唐人街", shortName: "CHINATOWN", lat: 13.740065, lng: 100.5136482 },
+  { id: "yaowarat", name: "ARUN SA WAD - YAOWARAT", nameTh: "เยาวราช", nameZh: "耀华力", shortName: "YAOWARAT", lat: 13.7435887, lng: 100.504873 },
+  { id: "nana", name: "ARUN SA WAD - 103 NANA", nameTh: "103 นานา", nameZh: "103那那", shortName: "103 NANA", lat: 13.7392403, lng: 100.5139454 },
+  { id: "ladphrao", name: "ARUN SA WAD - House Lad Phrao", nameTh: "บ้านลาดพร้าว", nameZh: "拉抛之家", shortName: "House ลาดพร้าว", lat: 13.8092807, lng: 100.5732116 },
+  { id: "onnut", name: "ARUN SA WAD - House ON NUT", nameTh: "บ้านอ่อนนุช", nameZh: "安努之家", shortName: "House อ่อนนุช", lat: 13.7056708, lng: 100.6059399 },
 ];
 
 export interface NearbyPlace {
   name: string;
   nameTh: string;
+  nameZh?: string;
   lat: number;
   lng: number;
   type: "temple" | "market" | "transport" | "landmark" | "food";
@@ -39,6 +41,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "Wat Mangkon Kamalawat",
     nameTh: "วัดมังกรกมลาวาส (วัดเล่งเน่ยยี่)",
+    nameZh: "龙莲寺",
     lat: 13.7420,
     lng: 100.5070,
     type: "temple",
@@ -48,6 +51,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "Wat Traimit",
     nameTh: "วัดไตรมิตรวิทยารามวรวิหาร",
+    nameZh: "金佛寺",
     lat: 13.7373,
     lng: 100.5134,
     type: "temple",
@@ -57,6 +61,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "Yaowarat Road",
     nameTh: "ถนนเยาวราช",
+    nameZh: "耀华力路",
     lat: 13.7398,
     lng: 100.5090,
     type: "landmark",
@@ -66,6 +71,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "Talat Kao (Old Market)",
     nameTh: "ตลาดเก่าเยาวราช",
+    nameZh: "老市场",
     lat: 13.7410,
     lng: 100.5100,
     type: "market",
@@ -75,6 +81,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "MRT Wat Mangkon",
     nameTh: "สถานี MRT วัดมังกร",
+    nameZh: "MRT龙莲寺站",
     lat: 13.7421,
     lng: 100.5103,
     type: "transport",
@@ -84,6 +91,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "Sampeng Lane",
     nameTh: "ซอยสำเพ็ง (ตรอกเล่งบ๊วยเอี๊ย)",
+    nameZh: "三聘街",
     lat: 13.7388,
     lng: 100.5060,
     type: "market",
@@ -93,6 +101,7 @@ export const NEARBY_PLACES: NearbyPlace[] = [
   {
     name: "T&K Seafood",
     nameTh: "ร้านที.แอนด์.เค ซีฟู้ด",
+    nameZh: "T&K海鲜",
     lat: 13.7395,
     lng: 100.5078,
     type: "food",

@@ -12,6 +12,7 @@ export type ExplorePlaceType =
 export interface ExplorePlace {
   name: string;
   nameTh: string;
+  nameZh?: string;
   lat: number;
   lng: number;
   type: ExplorePlaceType;

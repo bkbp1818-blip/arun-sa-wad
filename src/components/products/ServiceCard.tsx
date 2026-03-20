@@ -5,20 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import type { Product } from "@prisma/client";
+import { useTranslation, getLocalizedName, getLocalizedDesc } from "@/lib/i18n";
+import type { Locale } from "@/hooks/useLanguage";
 
 interface ServiceCardProps {
-  service: Product;
+  service: Product & { nameZh?: string | null; descZh?: string | null };
   onAddToCart?: (product: Product) => void;
 }
 
+const typeLabels: Record<string, Record<Locale, string>> = {
+  FOOD: { th: "อาหาร", en: "Food", zh: "美食" },
+  SERVICE: { th: "บริการ", en: "Service", zh: "服务" },
+  MERCH: { th: "ของฝาก", en: "Souvenir", zh: "伴手礼" },
+};
+
 export function ServiceCard({ service, onAddToCart }: ServiceCardProps) {
   const price = Number(service.price);
-
-  const typeLabels: Record<string, string> = {
-    FOOD: "อาหาร",
-    SERVICE: "บริการ",
-    MERCH: "ของฝาก",
-  };
+  const { t, locale } = useTranslation();
+  const name = getLocalizedName(locale, service);
+  const desc = getLocalizedDesc(locale, service);
 
   return (
     <Card className="overflow-hidden group hover:shadow-lg transition-shadow">
@@ -27,24 +32,24 @@ export function ServiceCard({ service, onAddToCart }: ServiceCardProps) {
         {service.images[0] ? (
           <img
             src={service.images[0]}
-            alt={service.nameTh}
+            alt={name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-            No Image
+            {t("common.noImage")}
           </div>
         )}
         <Badge className="absolute top-2 left-2" variant="secondary">
-          {typeLabels[service.type] || service.type}
+          {typeLabels[service.type]?.[locale] || service.type}
         </Badge>
       </div>
 
       {/* Content */}
       <CardContent className="p-4">
-        <h3 className="font-semibold text-lg mb-1">{service.nameTh}</h3>
+        <h3 className="font-semibold text-lg mb-1">{name}</h3>
         <p className="text-sm text-muted-foreground line-clamp-2">
-          {service.descTh || service.description}
+          {desc}
         </p>
       </CardContent>
 
@@ -54,11 +59,11 @@ export function ServiceCard({ service, onAddToCart }: ServiceCardProps) {
           <span className="text-2xl font-bold text-primary">
             {price.toLocaleString()}
           </span>
-          <span className="text-sm text-muted-foreground"> ฿</span>
+          <span className="text-sm text-muted-foreground"> {t("common.baht")}</span>
         </div>
         <Button onClick={() => onAddToCart?.(service)}>
           <ShoppingCart className="h-4 w-4 mr-2" />
-          เพิ่มในตะกร้า
+          {t("services.addToCart")}
         </Button>
       </CardFooter>
     </Card>
